@@ -1,0 +1,503 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="Autotrade.lua"/>
+    <Button name="AutotradeButtonTemplate" hidden="true" virtual="true">
+        <Size>
+            <AbsDimension x="293" y="16"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <FontString name="$parentBid" inherits="GameFontNormal">
+                    <Anchors>
+                        <Anchor point="RIGHT">
+                            <Offset>
+                                <AbsDimension x="-10" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentSubText" inherits="GameFontNormalSmall" justifyH="LEFT"/>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                this:SetFrameLevel(this:GetFrameLevel() + 1);
+            </OnLoad>
+            <OnClick>
+                AutotradeItemButton_OnClick(arg1);
+            </OnClick>
+            <OnReceiveDrag>
+                --[[ Go to My Auctions frame, not this one ]]
+                ForceAutotrade("AutotradeMyAuctionsFrame");
+                Autotrade_CreateAuction();
+            </OnReceiveDrag>
+            <OnEnter>
+                AutotradeItemButton_OnEnter();
+            </OnEnter>
+            <OnLeave>
+                AutotradeItemButton_OnLeave();
+            </OnLeave>
+        </Scripts>
+        <Frames>
+            <Button name="$parentClearAllButton">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+                <Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                    <OnClick>
+                        AutotradeListClearButton_OnClick(this:GetParent())
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+        <NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+            <Size>
+                <AbsDimension x="16" y="16"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT">
+                    <Offset>
+                        <AbsDimension x="3" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </NormalTexture>
+        <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+            <Size>
+                <AbsDimension x="16" y="16"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT">
+                    <Offset>
+                        <AbsDimension x="3" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </HighlightTexture>
+        <DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+            <Size>
+                <AbsDimension x="16" y="16"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT">
+                    <Offset>
+                        <AbsDimension x="3" y="0"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </DisabledTexture>
+        <NormalText name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+            <Size>
+                <AbsDimension x="0" y="0"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+                    <Offset>
+                        <AbsDimension x="2" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </NormalText>
+        <HighlightText name="$parentHighlightText" inherits="GameFontHighlight"  justifyH="LEFT">
+            <Size>
+                <AbsDimension x="0" y="0"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+                    <Offset>
+                        <AbsDimension x="2" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </HighlightText>
+        <DisabledText name="$parentDisabledText" inherits="GameFontDisable"  justifyH="LEFT">
+            <Size>
+                <AbsDimension x="0" y="0"/>
+            </Size>
+            <Anchors>
+                <Anchor point="LEFT" relativeTo="$parentHighlight" relativePoint="RIGHT">
+                    <Offset>
+                        <AbsDimension x="2" y="1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </DisabledText>
+    </Button>
+    <CheckButton name="RightJustifiedCheckButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="32" y="32"/>
+        </Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentText" inherits="GameFontNormalSmall" justifyH = "RIGHT">
+                    <Anchors>
+                        <Anchor point="RIGHT" relativePoint="LEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnClick>
+                if ( this:GetChecked() ) then
+                    PlaySound("igMainMenuOptionCheckBoxOff");
+                else
+                    PlaySound("igMainMenuOptionCheckBoxOn");
+                end
+            </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+    </CheckButton>
+    <ScrollFrame name="AutotradeDetailScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentTop" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+                    <Size>
+                        <AbsDimension x="30" y="123"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+                            <Offset>
+                                <AbsDimension x="-2" y="5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="0.46875" top="0" bottom="0.9609375"/>
+                </Texture>
+                <Texture name="$parentBottom" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+                    <Size>
+                        <AbsDimension x="30" y="123"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+                            <Offset>
+                                <AbsDimension x="-2" y="-1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+                </Texture>
+            </Layer>
+        </Layers>
+    </ScrollFrame>
+    <ScrollFrame name="AutotradeAuctionListScrollFrameTemplate" inherits="FauxScrollFrameTemplate" virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+                    <Size>
+                        <AbsDimension x="30" y="120"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+                            <Offset>
+                                <AbsDimension x="-2" y="2"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="0.46875" top="0.0234375" bottom="0.9609375"/>
+                </Texture>
+                <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-ScrollBar">
+                    <Size>
+                        <AbsDimension x="30" y="123"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+                            <Offset>
+                                <AbsDimension x="-2" y="-1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0.53125" right="1.0" top="0.03125" bottom="1.0"/>
+                </Texture>
+            </Layer>
+        </Layers>
+    </ScrollFrame>
+    <Button name="AutotradeFrameTabButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="115" y="32"/>
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentLeftDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+                    <Size>
+                        <AbsDimension x="20" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+                </Texture>
+                <Texture name="$parentMiddleDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+                    <Size>
+                        <AbsDimension x="88" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentLeftDisabled" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+                </Texture>
+                <Texture name="$parentRightDisabled" file="Interface\PaperDollInfoFrame\UI-Character-ActiveTab">
+                    <Size>
+                        <AbsDimension x="20" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentMiddleDisabled" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+                </Texture>
+                <Texture name="$parentLeft" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+                    <Size>
+                        <AbsDimension x="20" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                    <TexCoords left="0" right="0.15625" top="0" bottom="1.0"/>
+                </Texture>
+                <Texture name="$parentMiddle" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+                    <Size>
+                        <AbsDimension x="88" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.15625" right="0.84375" top="0" bottom="1.0"/>
+                </Texture>
+                <Texture name="$parentRight" file="Interface\PaperDollInfoFrame\UI-Character-InActiveTab">
+                    <Size>
+                        <AbsDimension x="20" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="RIGHT"/>
+                    </Anchors>
+                    <TexCoords left="0.84375" right="1.0" top="0" bottom="1.0"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnClick>
+                PanelTemplates_Tab_OnClick(AutotradeFrame);
+                AutotradeFrameTab_OnClick();
+            </OnClick>
+            <OnShow>
+                PanelTemplates_TabResize(10);
+                getglobal(this:GetName().."HighlightTexture"):SetWidth(this:GetTextWidth() + 30);
+            </OnShow>
+        </Scripts>
+        <NormalText name="$parentText" inherits="GameFontNormalSmall">
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </NormalText>
+        <HighlightText inherits="GameFontHighlightSmall">
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </HighlightText>
+        <DisabledText inherits="GameFontHighlightSmall">
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </DisabledText>
+        <HighlightTexture name="$parentHighlightTexture" file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+            <Size>
+                <AbsDimension x="5" y="32"/>
+            </Size>
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="2"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </HighlightTexture>
+    </Button>
+       <Frame name="AutotradeFrame" toplevel="true" movable="true" parent="UIParent" hidden="true">
+        <Size>
+            <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <HitRectInsets>
+            <AbsInset left="0" right="34" top="0" bottom="75"/>
+        </HitRectInsets>
+        <Layers>
+            <Layer level="BACKGROUND">
+              <!--  <Texture name="AutotradeFramePortrait" file="Interface\Cursor\CursorIcons"> -->
+                <Texture name="AutotradeFramePortrait" file="Interface\Addons\AutoTrade\pointer_cache">
+                    <Size>
+                        <AbsDimension x="60" y="60"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <!-- <TexCoords left="0.25" right="0.5" top="0.625" bottom="0.75"/> -->
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="AutotradeNameFrame">
+                <Size>
+                    <AbsDimension x="109" y="12"/>
+                </Size>
+                 <Anchors>
+                    <Anchor point="CENTER">
+                        <Offset>
+                            <AbsDimension x="6" y="232"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer>
+                        <FontString name="AutotradeNameText" inherits="GameFontNormal" text="Autotrade">
+                            <Size>
+                                <AbsDimension x="109" y="16"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                            <Color r="1.0" g="1.0" b="1.0"/>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                     <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+            <Button name="AutotradeFrameCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="AutotradeFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-29" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeFrameTab1" inherits="AutotradeFrameTabButtonTemplate" id="1" text="AUTOTRADE_MY_AUCTIONS">
+                <Anchors>
+                    <Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="65" y="61"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                    <OnEnter>
+                        -- CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                        -- CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_AUCTIONS_TIP, AUTOTRADE_MY_AUCTIONS), 1.0,1.0,1.0 );
+                    </OnEnter>
+                    <OnLeave>
+                        -- CosmosTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="AutotradeFrameTab2" inherits="AutotradeFrameTabButtonTemplate" id="2" text="AUTOTRADE_MY_BIDS">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="AutotradeFrameTab1" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                    <OnEnter>
+                        -- CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                        -- CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_BIDS_TIP, AUTOTRADE_MY_BIDS), 1.0,1.0,1.0 );
+                    </OnEnter>
+                    <OnLeave>
+                        -- CosmosTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </Button>
+            <Button name="AutotradeFrameTab3" inherits="AutotradeFrameTabButtonTemplate" id="3" text="AUTOTRADE_ALL_AUCTIONS">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="AutotradeFrameTab2" relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="-15" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        -- this:SetFrameLevel(this:GetFrameLevel() + 1);
+                    </OnLoad>
+                    <OnEnter>
+                       CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                       CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_ALL_AUCTIONS_TIP, AUTOTRADE_ALL_AUCTIONS), 1.0,1.0,1.0 );
+                    </OnEnter>
+                    <OnLeave>
+                        CosmosTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                    AutotradeFrame_OnLoad();
+            </OnLoad>
+            <OnShow>
+                PlaySound("igCharacterInfoOpen");
+            </OnShow>
+            <OnEvent>
+                AutotradeFrame_OnEvent();
+            </OnEvent>
+            <OnMouseWheel>
+            </OnMouseWheel>
+            <OnUpdate>
+            </OnUpdate>
+        </Scripts>
+    </Frame>
+</Ui>

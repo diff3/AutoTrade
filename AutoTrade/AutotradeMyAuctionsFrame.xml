@@ -1,0 +1,630 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="AutotradeMyAuctionsFrame.lua"/>
+    <Frame name="AutotradeMyAuctionsFrame" setallpoints="true" parent="AutotradeFrame" enableMouse="true" hidden="true" id="1">
+        <HitRectInsets>
+            <AbsInset left="0" right="30" top="0" bottom="45"/>
+        </HitRectInsets>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopLeft">
+                    <Size>
+                        <AbsDimension x="256" y="256"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-TopRight">
+                    <Size>
+                        <AbsDimension x="128" y="256"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="AutotradeMyAuctionsFrameBottomLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
+                    <Size>
+                        <AbsDimension x="256" y="256"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="AutotradeMyAuctionsFrameBottomRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
+                    <Size>
+                        <AbsDimension x="128" y="256"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture name="AutotradeMyAuctionsHorizontalBarLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+                    <Size>
+                        <AbsDimension x="256" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="15" y="-275"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="1.0" top="0" bottom="0.25"/>
+                </Texture>
+                <Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-HorizontalBar">
+                    <Size>
+                        <AbsDimension x="75" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsHorizontalBarLeft" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="0.29296875" top="0.25" bottom="0.5"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="AutotradeMyAuctionsExpandButtonFrame">
+                <Size>
+                    <AbsDimension x="54" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="15" y="-70"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture name="AutotradeMyAuctionsExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+                            <Size>
+                                <AbsDimension x="8" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture name="AutotradeMyAuctionsExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+                            <Size>
+                                <AbsDimension x="38" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsExpandTabLeft" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="0" y="6"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </Texture>
+                        <Texture file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+                            <Size>
+                                <AbsDimension x="8" y="32"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsExpandTabMiddle" relativePoint="RIGHT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="AutotradeMyAuctionsCollapseAllButton" hidden="true" inherits="AutotradeButtonTemplate" text="ALL">
+                        <Size>
+                            <AbsDimension x="40" y="22"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsExpandTabLeft" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="3"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                AutotradeCollapseAllButton_OnClick(AutotradeMyAuctionsPageInfo);
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="AutotradeMyAuctionsHighlightFrame" hidden="true">
+                <Size>
+                    <AbsDimension x="293" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture name="AutotradeMyAuctionsHighlight" file="Interface\Buttons\UI-Listbox-Highlight2"/>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Button name="AutotradeMyAuctionsItem1" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsFrame">
+                        <Offset>
+                            <AbsDimension x="22" y="-100"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem2" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem1" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem3" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem2" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem4" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem3" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem5" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem4" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem6" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem5" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem7" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem6" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem8" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem7" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem9" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem8" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem10" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem9" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="AutotradeMyAuctionsItem11" inherits="AutotradeButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsItem10" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <ScrollFrame name="AutotradeMyAuctionsListScrollFrame" inherits="AutotradeAuctionListScrollFrameTemplate">
+                <Size>
+                    <AbsDimension x="296" y="184"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="AutotradeMyAuctionsFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-67" y="-96"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnVerticalScroll>
+                        FauxScrollFrame_OnVerticalScroll(AUTO_TRADE_ITEM_HEIGHT, AutotradeListFrame_Update)
+                    </OnVerticalScroll>
+                </Scripts>
+            </ScrollFrame>
+            <Frame name="AutotradeMyAuctionsMoneyFrame" inherits="SmallChooseMoneyFrameTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="AutotradeMyAuctionsFrame" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="180" y="86"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <Frame name="AutotradeMyAuctionsDetailFrame">
+                <Size>
+                    <AbsDimension x="296" y="120"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="AutotradeMyAuctionsListScrollFrame" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString name="AutotradeMyAuctionsItemName" inherits="GameFontNormal" justifyH="LEFT">
+                            <Size>
+                                <AbsDimension x="244" y="0"/>
+                            </Size>
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="46" y="-2"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsOwnerLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="Auction">
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="46" y="-22"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsBidLabelUpper" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="-48"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsBidLabelLower" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="-66"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsBidLabelUpperSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsBidFrameUpper" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsBidLabelLowerSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsBidFrameLower" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsTimeLabel" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="-84"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsTimeText" inherits="GameFontNormalSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="AutotradeMyAuctionsTimeLabel" relativePoint="RIGHT">
+                                    <Offset>
+                                        <AbsDimension x="50" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString name="AutotradeMyAuctionsMeetInText" inherits="GameFontNormalSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="5" y="-102"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button name="AutotradeMyAuctionsShorterButton" hidden="true">
+                        <Size>
+                            <AbsDimension x="16" y="16"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsTimeLabel" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="55" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <NormalTexture file="Interface\Buttons\UI-MinusButton-Up">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </NormalTexture>
+                        <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </HighlightTexture>
+                        <DisabledTexture file="Interface\UI-MinusButton-Disabled">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </DisabledTexture>
+                        <NormalText inherits="GameFontNormal"/>
+                        <DisabledText inherits="GameFontDisable"/>
+                        <HighlightText inherits="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                AutotradeChangeTimeButton_OnClick("-");
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="AutotradeMyAuctionsLongerButton" hidden="true">
+                        <Size>
+                            <AbsDimension x="16" y="16"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsShorterButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="1" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <NormalTexture file="Interface\Buttons\UI-PlusButton-Up">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </NormalTexture>
+                        <HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </HighlightTexture>
+                        <DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled">
+                            <Size>
+                                <AbsDimension x="16" y="16"/>
+                            </Size>
+                        </DisabledTexture>
+                        <NormalText inherits="GameFontNormal"/>
+                        <DisabledText inherits="GameFontDisable"/>
+                        <HighlightText inherits="GameFontHighlight"/>
+                        <Scripts>
+                            <OnClick>
+                                AutotradeChangeTimeButton_OnClick("+");
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="AutotradeMyAuctionsItemIcon">
+                        <Size>
+                            <AbsDimension x="37" y="37"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="5" y="-4"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture file="Interface\Buttons\UI-EmptySlot">
+                                    <Size>
+                                        <AbsDimension x="64" y="64"/>
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT">
+                                            <Offset>
+                                                <AbsDimension x="-13" y="13"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </Texture>
+                            </Layer>
+                            <Layer level="ARTWORK">
+                                <FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+                                    <Anchors>
+                                        <Anchor point="BOTTOMRIGHT">
+                                            <Offset>
+                                                <AbsDimension x="-5" y="2"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                            <OnEnter>
+                                AutotradeItemIcon_OnEnter();
+                            </OnEnter>
+                            <OnLeave>
+                                AutotradeItemIcon_OnLeave();
+                            </OnLeave>
+                        </Scripts>
+                    </Button>
+                    <Frame name="AutotradeMyAuctionsBidMoneyFrameUpper" inherits="SmallMoneyFrameTemplate">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsBidLabelUpper" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="12" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                this:Hide();
+                                SmallMoneyFrame_OnLoad();
+                                this.small = 1;
+                                MoneyFrame_SetType("PLAYER");
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+                    <Frame name="AutotradeMyAuctionsBidMoneyFrameLower" inherits="SmallMoneyFrameTemplate">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsBidLabelLower" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="12" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                this:Hide();
+                                SmallMoneyFrame_OnLoad();
+                                this.small = 1;
+                                this.staticMoney = 0;
+                                MoneyFrame_SetType("STATIC");
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+                    <Button name="AutotradeMyAuctionsMeetInButton" inherits="UIPanelButtonTemplate">
+                        <Size>
+                            <AbsDimension x="60" y="16"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="AutotradeMyAuctionsMeetInText" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="5" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                Autotrade_MeetInButton_OnClick();
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button name="AutotradeMyAuctionsChangeSellFormatButton" inherits="UIPanelButtonTemplate" hidden="true">
+                        <Size>
+                            <AbsDimension x="60" y="16"/>
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="130" y="-18"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                this:SetText("Change");
+                            </OnLoad>
+                            <OnClick>
+                                Autotrade_ChangeSellMethod_OnClick();
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Button name="AutotradeMyAuctionsAcceptButton" inherits="UIPanelButtonTemplate">
+                <Size>
+                    <AbsDimension x="80" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="AutotradeMyAuctionsFrame" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="224" y="-420"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        this:SetText(ACCEPT)
+                    </OnLoad>
+                    <OnClick>
+                        AutotradeAcceptButton_OnClick();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="AutotradeMyAuctionsRemoveButton" inherits="UIPanelButtonTemplate" text="GLOBAL_REMOVE_TAG_C">
+                <Size>
+                    <AbsDimension x="80" y="22"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="AutotradeMyAuctionsFrame" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="305" y="-420"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        AutotradeRemoveButton_OnClick();
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                AutotradeSubFrame_OnLoad(AutotradeMyAuctionsPageInfo);
+                AutotradeMyAuctionsFrame_OnLoad();
+            </OnLoad>
+            <OnShow>
+                PlaySound("igCharacterInfoOpen");
+            </OnShow>
+            <OnHide>
+--[[            Hmm, now what did CloseTrainer do?
+                CloseTrainer();
+                UpdateMicroButtons();
+]]
+                AutotradeSubFrame_OnHide(AutotradeMyAuctionsPageInfo);
+                PlaySound("igCharacterInfoClose");
+            </OnHide>
+            <OnEvent>
+                AutotradeFrame_OnEvent();
+            </OnEvent>
+            <OnReceiveDrag>
+                Autotrade_CreateAuction();
+            </OnReceiveDrag>
+            <OnMouseWheel>
+                return;
+            </OnMouseWheel>
+        </Scripts>
+    </Frame>
+</Ui>

@@ -1,0 +1,10 @@
+## Interface: 11200
+## SavedVariablesPerCharacter: list, PageInfoByFrameName
+
+localizations.lua
+cosmos_emu.lua
+CosmosTooltip.xml
+AutotradeFrame.xml
+AutotradeBidAuctionsFrame.xml
+AutotradeMyAuctionsFrame.xml
+AutotradeAllAuctionsFrame.xml

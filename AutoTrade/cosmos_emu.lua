@@ -1,0 +1,1 @@
+-- 	Cosmos_RegisterChatCommand ( "AUTOTRADE_BID", tempcarray, tempcfunc, "Shows my bids currently in progress", CSM_CHAINNONE );

@@ -126,6 +126,16 @@
                             </Anchor>
                         </Anchors>
                         <Scripts>
+                            <OnLoad>
+                                if (ALL) then
+                                    this:SetText(ALL);
+                                end
+                                this:SetHighlightTexture("Interface\\Buttons\\UI-MinusButton-Up");
+                                local clearButton = getglobal(this:GetName().."ClearAllButton");
+                                if (clearButton) then
+                                    clearButton:Hide();
+                                end
+                            </OnLoad>
                             <OnClick>
                                 AutotradeCollapseAllButton_OnClick(AutotradeBidAuctionsPageInfo);
                             </OnClick>
@@ -262,7 +272,7 @@
                     </OnVerticalScroll>
                 </Scripts>
             </ScrollFrame>
-            <Frame name="AutotradeBidAuctionsMoneyFrame" inherits="SmallChooseMoneyFrameTemplate">
+            <Frame name="AutotradeBidAuctionsMoneyFrame" inherits="SmallMoneyFrameTemplate">
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT" relativeTo="AutotradeBidAuctionsFrame" relativePoint="BOTTOMLEFT">
                         <Offset>
@@ -307,7 +317,7 @@
                         </FontString>
                         <FontString name="AutotradeBidAuctionsOwnerName" inherits="GameFontNormalSmall" justifyH="LEFT">
                             <Anchors>
-                                <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsOwnerLabel" relativePoint="RIGHT">
+                                <Anchor point="LEFT" relativeTo="AutotradeBidAuctionsOwnerLabel" relativePoint="RIGHT">
                                     <Offset>
                                         <AbsDimension x="5" y="0"/>
                                     </Offset>
@@ -343,7 +353,7 @@
                         </FontString>
                         <FontString name="AutotradeBidAuctionsBidLabelUpperSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
                             <Anchors>
-                                <Anchor point="LEFT" relativeTo="AutotradeBidAuctionsBidFrameUpper" relativePoint="RIGHT">
+                                <Anchor point="LEFT" relativeTo="AutotradeBidAuctionsBidMoneyFrameUpper" relativePoint="RIGHT">
                                     <Offset>
                                         <AbsDimension x="5" y="0"/>
                                     </Offset>
@@ -352,7 +362,7 @@
                         </FontString>
                         <FontString name="AutotradeBidAuctionsBidLabelLowerSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
                             <Anchors>
-                                <Anchor point="LEFT" relativeTo="AutotradeBidAuctionsBidFrameLower" relativePoint="RIGHT">
+                                <Anchor point="LEFT" relativeTo="AutotradeBidAuctionsBidMoneyFrameLower" relativePoint="RIGHT">
                                     <Offset>
                                         <AbsDimension x="5" y="0"/>
                                     </Offset>

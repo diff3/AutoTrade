@@ -19,6 +19,14 @@ AllAuctionLists = {};
 AllAuctionLists[AuctionTypeAllOpen] = AuctionsOpen;
 AllAuctionLists[AuctionTypeAllCancelled] = AuctionsAllCancelled;
 
+local function Autotrade_AdjustFilterHitRect(button)
+	local text = getglobal(button:GetName().."Text");
+	if (text and text.GetStringWidth)
+	then
+		button:SetHitRectInsets(0, -(text:GetStringWidth() + 4), 0, 0);
+	end
+end
+
 function AutotradeAllAuctionsFrame_OnLoad()
 	if (not PageInfoByFrameName) then
 		PageInfoByFrameName = {};
@@ -58,4 +66,15 @@ function AutotradeAllAuctionsFrame_OnLoad()
   
 	AutotradeAllAuctionsZoneButtonText:SetText(GLOBAL_ZONE_TAG_C);
 	AutotradeAllAuctionsItemButtonText:SetText(GLOBAL_ITEM_TAG_C);
+	Autotrade_AdjustFilterHitRect(AutotradeAllAuctionsItemButton);
+	Autotrade_AdjustFilterHitRect(AutotradeAllAuctionsZoneButton);
+	if (AutotradeAllAuctionsWishListButtonText)
+	then
+		AutotradeAllAuctionsWishListButtonText:SetText(AUTOTRADE_WISH_LIST);
+	end
+	AutotradeAllAuctionsBidMoneyFrameLower.autotradePageInfo = AutotradeAllAuctionsPageInfo;
+	AutotradeAllAuctionsBidMoneyFrameLower.autotradeMoneyKind = "bid";
+	AutotradeAllAuctionsBidMoneyFrameLower:EnableMouse(true);
+	AutotradeAllAuctionsBidMoneyFrameLower:SetScript("OnMouseDown", Autotrade_MoneyFrame_OnClick);
+	Autotrade_NoteFrameLoaded();
 end

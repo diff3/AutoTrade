@@ -56,4 +56,9 @@ function AutotradeMyAuctionsFrame_OnLoad()
 	AutotradeMyAuctionsPageInfo.saleText = "Format: Sale";
 	AutotradeMyAuctionsPageInfo.auctionText = "Format: Auction";
 	AutotradeMyAuctionsPageInfo.changeSellMethodButton = AutotradeMyAuctionsChangeSellFormatButton;
+	AutotradeMyAuctionsBidMoneyFrameUpper.autotradePageInfo = AutotradeMyAuctionsPageInfo;
+	AutotradeMyAuctionsBidMoneyFrameUpper.autotradeMoneyKind = "minBid";
+	AutotradeMyAuctionsBidMoneyFrameUpper:EnableMouse(true);
+	AutotradeMyAuctionsBidMoneyFrameUpper:SetScript("OnMouseDown", Autotrade_MoneyFrame_OnClick);
+	Autotrade_NoteFrameLoaded();
 end

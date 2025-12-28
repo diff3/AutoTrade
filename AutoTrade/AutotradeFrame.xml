@@ -176,7 +176,7 @@
                         <AbsDimension x="30" y="123"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+                        <Anchor point="TOP" relativeTo="$parentScrollBar">
                             <Offset>
                                 <AbsDimension x="-2" y="5"/>
                             </Offset>
@@ -189,7 +189,7 @@
                         <AbsDimension x="30" y="123"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+                        <Anchor point="BOTTOM" relativeTo="$parentScrollBar">
                             <Offset>
                                 <AbsDimension x="-2" y="-1"/>
                             </Offset>
@@ -208,7 +208,7 @@
                         <AbsDimension x="30" y="120"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="TOP" relativeTo="$parentScrollBarScrollUpButton">
+                        <Anchor point="TOP" relativeTo="$parentScrollBar">
                             <Offset>
                                 <AbsDimension x="-2" y="2"/>
                             </Offset>
@@ -221,7 +221,7 @@
                         <AbsDimension x="30" y="123"/>
                     </Size>
                     <Anchors>
-                        <Anchor point="BOTTOM" relativeTo="$parentScrollBarScrollDownButton">
+                        <Anchor point="BOTTOM" relativeTo="$parentScrollBar">
                             <Offset>
                                 <AbsDimension x="-2" y="-1"/>
                             </Offset>
@@ -433,11 +433,11 @@
                         this:SetFrameLevel(this:GetFrameLevel() + 1);
                     </OnLoad>
                     <OnEnter>
-                        -- CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
-                        -- CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_AUCTIONS_TIP, AUTOTRADE_MY_AUCTIONS), 1.0,1.0,1.0 );
+                        -- GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                        -- GameTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_AUCTIONS_TIP, AUTOTRADE_MY_AUCTIONS), 1.0,1.0,1.0 );
                     </OnEnter>
                     <OnLeave>
-                        -- CosmosTooltip:Hide();
+                        -- GameTooltip:Hide();
                     </OnLeave>
                 </Scripts>
             </Button>
@@ -454,11 +454,11 @@
                         this:SetFrameLevel(this:GetFrameLevel() + 1);
                     </OnLoad>
                     <OnEnter>
-                        -- CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
-                        -- CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_BIDS_TIP, AUTOTRADE_MY_BIDS), 1.0,1.0,1.0 );
+                        -- GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                        -- GameTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_MY_BIDS_TIP, AUTOTRADE_MY_BIDS), 1.0,1.0,1.0 );
                     </OnEnter>
                     <OnLeave>
-                        -- CosmosTooltip:Hide();
+                        -- GameTooltip:Hide();
                     </OnLeave>
                 </Scripts>
             </Button>
@@ -475,11 +475,11 @@
                         -- this:SetFrameLevel(this:GetFrameLevel() + 1);
                     </OnLoad>
                     <OnEnter>
-                       CosmosTooltip:SetOwner(this, "ANCHOR_RIGHT");
-                       CosmosTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_ALL_AUCTIONS_TIP, AUTOTRADE_ALL_AUCTIONS), 1.0,1.0,1.0 );
+                       GameTooltip:SetOwner(this, "ANCHOR_RIGHT");
+                       GameTooltip:SetText(MicroButtonTooltipText(AUTOTRADE_ALL_AUCTIONS_TIP, AUTOTRADE_ALL_AUCTIONS), 1.0,1.0,1.0 );
                     </OnEnter>
                     <OnLeave>
-                        CosmosTooltip:Hide();
+                        GameTooltip:Hide();
                     </OnLeave>
                 </Scripts>
             </Button>
@@ -497,6 +497,7 @@
             <OnMouseWheel>
             </OnMouseWheel>
             <OnUpdate>
+                AutotradeFrame_OnUpdate(arg1);
             </OnUpdate>
         </Scripts>
     </Frame>

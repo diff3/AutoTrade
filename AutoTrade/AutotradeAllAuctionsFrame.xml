@@ -126,6 +126,16 @@
                             </Anchor>
                         </Anchors>
                         <Scripts>
+                            <OnLoad>
+                                if (ALL) then
+                                    this:SetText(ALL);
+                                end
+                                this:SetHighlightTexture("Interface\\Buttons\\UI-MinusButton-Up");
+                                local clearButton = getglobal(this:GetName().."ClearAllButton");
+                                if (clearButton) then
+                                    clearButton:Hide();
+                                end
+                            </OnLoad>
                             <OnClick>
                                 AutotradeCollapseAllButton_OnClick(AutotradeAllAuctionsPageInfo);
                             </OnClick>
@@ -140,7 +150,7 @@
                 <Anchors>
                     <Anchor point="TOPRIGHT">
                         <Offset>
-                            <AbsDimension x="-40" y="-65"/>
+                            <AbsDimension x="-43" y="-65"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
@@ -157,7 +167,7 @@
                         </Texture>
                         <Texture name="AutotradeAllAuctionsSortFrameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
                             <Size>
-                                <AbsDimension x="150" y="32"/>
+                                <AbsDimension x="165" y="32"/>
                             </Size>
                             <Anchors>
                                 <Anchor point="RIGHT" relativeTo="AutotradeAllAuctionsSortFrameRight" relativePoint="LEFT"/>
@@ -179,7 +189,7 @@
                             <Anchors>
                                 <Anchor point="TOPLEFT">
                                     <Offset>
-                                        <AbsDimension x="12" y="-10"/>
+                                        <AbsDimension x="1" y="-10"/>
                                     </Offset>
                                 </Anchor>
                             </Anchors>
@@ -192,9 +202,9 @@
                             <AbsDimension x="25" y="25"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsSortFrameLeft" relativePoint="RIGHT">
+                            <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsFilterTitleText" relativePoint="RIGHT">
                                 <Offset>
-                                    <AbsDimension x="50" y="2"/>
+                                    <AbsDimension x="6" y="0"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>
@@ -212,9 +222,9 @@
                             <AbsDimension x="25" y="25"/>
                         </Size>
                         <Anchors>
-                            <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsItemButton" relativePoint="RIGHT">
+                            <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsItemButtonText" relativePoint="RIGHT">
                                 <Offset>
-                                    <AbsDimension x="27" y="0"/>
+                                    <AbsDimension x="12" y="0"/>
                                 </Offset>
                             </Anchor>
                         </Anchors>
@@ -358,7 +368,7 @@
                     </OnVerticalScroll>
                 </Scripts>
             </ScrollFrame>
-            <Frame name="AutotradeAllAuctionsMoneyFrame" inherits="SmallChooseMoneyFrameTemplate">
+            <Frame name="AutotradeAllAuctionsMoneyFrame" inherits="SmallMoneyFrameTemplate">
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT" relativeTo="AutotradeAllAuctionsFrame" relativePoint="BOTTOMLEFT">
                         <Offset>
@@ -419,7 +429,7 @@
                                 </Anchor>
                             </Anchors>
                         </FontString>
-                        <FontString name="AutotradeAllAuctionsBidLabelUpper" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+                        <FontString name="AutotradeAllAuctionsBidLabelUpper" inherits="GameFontNormalSmall" justifyH="LEFT" text="Min bid:">
                             <Anchors>
                                 <Anchor point="TOPLEFT">
                                     <Offset>
@@ -428,7 +438,7 @@
                                 </Anchor>
                             </Anchors>
                         </FontString>
-                        <FontString name="AutotradeAllAuctionsBidLabelLower" inherits="GameFontNormalSmall" justifyH="LEFT" text="">
+                        <FontString name="AutotradeAllAuctionsBidLabelLower" inherits="GameFontNormalSmall" justifyH="LEFT" text="Bid:">
                             <Anchors>
                                 <Anchor point="TOPLEFT">
                                     <Offset>
@@ -439,7 +449,7 @@
                         </FontString>
                         <FontString name="AutotradeAllAuctionsBidLabelUpperSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
                             <Anchors>
-                                <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsBidFrameUpper" relativePoint="RIGHT">
+                                <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsBidMoneyFrameUpper" relativePoint="RIGHT">
                                     <Offset>
                                         <AbsDimension x="5" y="0"/>
                                     </Offset>
@@ -448,7 +458,7 @@
                         </FontString>
                         <FontString name="AutotradeAllAuctionsBidLabelLowerSubText" inherits="GameFontNormalSmall" justifyH="LEFT">
                             <Anchors>
-                                <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsBidFrameLower" relativePoint="RIGHT">
+                                <Anchor point="LEFT" relativeTo="AutotradeAllAuctionsBidMoneyFrameLower" relativePoint="RIGHT">
                                     <Offset>
                                         <AbsDimension x="5" y="0"/>
                                     </Offset>

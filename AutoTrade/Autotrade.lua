@@ -108,7 +108,7 @@ AUTO_TRADE_ITEM_HEIGHT = 16;
 
 AuctionsMyOpen = {};
 AuctionsOpen = {};
-AuctionsBidsOpen = {};
+AuctionsBidOpen = {};
 
 -- Frames
 local AutotradeSubFrames = { "AutotradeMyAuctionsFrame", "AutotradeBidAuctionsFrame", "AutotradeAllAuctionsFrame" };
@@ -157,6 +157,7 @@ AutotradeMessageFormat.Ended = AutotradePreMeetPrefix.."ENDED %s%s (%s)"; -- for
 
 -- Format for link text
 local LinkFormat = "|c%x%x%x%x%x%x%x%x|H.+|h%[.+%]|h|r";
+local RawLinkFormat = "item:[^%s]+";
 -- Formats for parsing automated messages
 
 -- Auction start messages
@@ -191,6 +192,28 @@ AutotradePayloadFormat.SoldShort = "^SOLD%s+("..LinkFormat..")%s*(%S*)%s+to%s+(%
 
 -- Auction closed (no sale) message pattern.  Captures are link, quantity string, and auction id.
 AutotradePayloadFormat.Ended = "^ENDED%s+("..LinkFormat..")%s*(%S*)%s+%((%d+)%)$";
+
+-- Raw item link formats (item:ID:...)
+AutotradePayloadFormat.SellNoMinRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s*%((%d+),([%d%.]+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.OldSellNoMinRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s*%((%d+),([%d%.]+),([^,]*),(.*)%)$";
+AutotradePayloadFormat.SellLongRaw  = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+min%s+(%d+)(%a)%s*(%d+)(%a)%s*%((%d+),([%d%.]+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.OldSellLongRaw  = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+min%s+(%d+)(%a)%s*(%d+)(%a)%s*%((%d+),([%d%.]+),([^,]*),(.*)%)$";
+AutotradePayloadFormat.SellShortRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+min%s+(%d+)(%a)%s*%((%d+),([%d%.]+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.OldSellShortRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+min%s+(%d+)(%a)%s*%((%d+),([%d%.]+),([^,]*),(.*)%)$";
+AutotradePayloadFormat.FlatSaleLongRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+for%s+(%d+)(%a)%s*(%d+)(%a)%s*%((%d+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.FlatSaleShortRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+for%s+(%d+)(%a)%s*%((%d+),([^,]*),([^,]*),(.*)%)$";
+
+AutotradePayloadFormat.BidLongRaw = "^Offer%s+(%d+)(%a)%s*(%d+)(%a)%s+on%s+(%a+)'s%s+("..RawLinkFormat..")%s*(%S*)%s*%((%d+),([^,]*)%)$";
+AutotradePayloadFormat.BidShortRaw = "^Offer%s+(%d+)(%a)%s+on%s+(%a+)'s%s+("..RawLinkFormat..")%s*(%S*)%s*%((%d+),([^,]*)%)$";
+
+AutotradePayloadFormat.UpdateLongRaw  = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+heard%s+(%d+)(%a)%s*(%d+)(%a)%s+from%s+(%a+)%s*%((%d+),([%d%.]+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.OldUpdateLongRaw  = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+heard%s+(%d+)(%a)%s*(%d+)(%a)%s+from%s+(%a+)%s*%((%d+),([%d%.]+),([^,]*),(.*)%)$";
+AutotradePayloadFormat.UpdateShortRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+heard%s+(%d+)(%a)%s+from%s+(%a+)%s*%((%d+),([%d%.]+),([^,]*),([^,]*),(.*)%)$";
+AutotradePayloadFormat.OldUpdateShortRaw = "^WTS%s+("..RawLinkFormat..")%s*(%S*)%s+heard%s+(%d+)(%a)%s+from%s+(%a+)%s*%((%d+),([%d%.]+),([^,]*),(.*)%)$";
+
+AutotradePayloadFormat.SoldLongRaw = "^SOLD%s+("..RawLinkFormat..")%s*(%S*)%s+to%s+(%a+)%s+for%s+(%d+)(%a)%s*(%d+)(%a)%s*%((%d+),([^,]*)%)$";
+AutotradePayloadFormat.SoldShortRaw = "^SOLD%s+("..RawLinkFormat..")%s*(%S*)%s+to%s+(%a+)%s+for%s+(%d+)(%a)%s*%((%d+),([^,]*)%)$";
+AutotradePayloadFormat.EndedRaw = "^ENDED%s+("..RawLinkFormat..")%s*(%S*)%s+%((%d+)%)$";
 
 --[[
 -- No min.  captures are link, quantity string, auction id, countdown, location, and texture filename.
@@ -229,7 +252,7 @@ local AutotradeEndedPayloadFormat = "^ENDED%s+("..LinkFormat..")%s*(%S*)%s+%((%d
 -- Static vars.  File scope.
 local AUTO_TRADE_DEBUG = true;
 local AUTO_TRADE_DEBUG_LEVEL = 1;
-local DEBUG_COMM = true;
+local DEBUG_COMM = false;
 local DEBUG_SHOW_MESSAGES = true;
 
 
@@ -246,6 +269,7 @@ AuctionTypeAllOpen = "All Open";
 AuctionTypeBidOpen = "Bidding";
 AuctionTypeBidWon = "Won";
 AuctionTypeBidLost = "Lost";
+AuctionTypeBidClosed = "Bid Closed";
 
 local NextAuctionId = 0;
 
@@ -533,6 +557,12 @@ end
 local AutotradeLoaded = false;
 local AutotradeLoadTime = GetTime() + 60;
 local AutotradeChannelJoined = false;
+local AUTOTRADE_SAVED_VERSION = 1;
+local Autotrade_SavedLoaded = false;
+local Autotrade_SavedNeedsLoad = false;
+local Autotrade_IgnoreSelfLeaveUntil = 0;
+local Autotrade_AllowSelfLeaveCancel = false;
+local Autotrade_FramesLoaded = 0;
 -- @JLR - MUTE START
 local AutotradeMute = false;
 -- @JLR - MUTE END
@@ -632,19 +662,6 @@ end
 
 --------- Generic data manipulation ----------------------------------------
 
-
-function Cosmos_CopyTable(table)
-	if (not table)
-	then
-		return;
-	end
-
-	local newTable = {};
-	for index, value in table do
-		newTable[index] = value;
-	end
-	return newTable;
-end
 
 
 local function ExplodeHyperlink(link)
@@ -932,7 +949,7 @@ local function Autotrade_SaveStringToCVar(str, name)
 		for chunk = 1, numChunks, 1 do
 			chunkName = name.."_chunk_"..chunk;
 			RegisterCVar(chunkName);
-			SetCVar(chunkName, strsub(str, CVAR_MAX_SIZE * (i - 1) + 1, CVAR_MAX_SIZE * i));
+			SetCVar(chunkName, strsub(str, CVAR_MAX_SIZE * (chunk - 1) + 1, CVAR_MAX_SIZE * chunk));
 		end
 		DEBUG_MSG("Saved string "..name.."="..str.." in "..numChunks.." chunks.", 4);
 	end
@@ -941,7 +958,7 @@ end
 
 local function Autotrade_SaveStringArrayToCVar(array, name)
 	local i = 0;
-	for index, value in array do
+	for index, value in pairs(array) do
 		if (value)
 		then
 			i = i + 1;
@@ -957,8 +974,11 @@ local function Autotrade_LoadStringFromCVar(name)
 	local str;
 	RegisterCVar(name.."_chunks");
 	local chunks = GetCVar(name.."_chunks");
-	local chunks = "0"
 	-- What is chunks if name_chunks is not registered?
+	if (not chunks or chunks == "")
+	then
+		chunks = "0";
+	end
 	if (chunks == "0")
 	then
 		-- Commented out because of cvar shrinkage
@@ -966,7 +986,6 @@ local function Autotrade_LoadStringFromCVar(name)
 		str = GetCVar(name);
 		DEBUG_MSG("Loaded string "..name.."="..str.." in one chunk.", 4);
 
-		str = nil;
 	else
 		local numChunks = chunks + 0; -- +0 to do conversion
 		str = "";
@@ -1057,7 +1076,7 @@ local function DEBUG_PRINT_WISH_LIST(list, debugLevel)
 	local separator = "";
 	if (list)
 	then
-		for index, value in list do
+		for index, value in pairs(list) do
 			message = message..separator.."("..index.."="..value..")";
 			separator = ", ";
 		end
@@ -1209,7 +1228,7 @@ local function MakeItemTypeFilterFromFlags(typeStringFlags)
 	itemFilters.miscTypes = {};
 	if (typeStringFlags)
 	then
-		for string, flag in typeStringFlags do
+		for string, flag in pairs(typeStringFlags) do
 			if (string == "Cloth" or
 				string == "Leather" or
 				string == "Mail")
@@ -1266,7 +1285,7 @@ local function MakeItemTypeFilterFromFlags(typeStringFlags)
 	then
 		local message = "Armor types allowed: ";
 		local separator = "";
-		for type, flag in itemFilters.armorTypes do
+		for type, flag in pairs(itemFilters.armorTypes) do
 			if (flag)
 			then
 				message = message..separator..type;
@@ -1275,7 +1294,7 @@ local function MakeItemTypeFilterFromFlags(typeStringFlags)
 		end
 		message = message.."; Armor slots allowed: ";
 		separator = "";
-		for type, flag in itemFilters.armorSlots do
+		for type, flag in pairs(itemFilters.armorSlots) do
 			if (flag)
 			then
 				message = message..separator..type;
@@ -1284,7 +1303,7 @@ local function MakeItemTypeFilterFromFlags(typeStringFlags)
 		end
 		message = message.."; Weapon types allowed: ";
 		separator = "";
-		for type, flag in itemFilters.weaponTypes do
+		for type, flag in pairs(itemFilters.weaponTypes) do
 			if (flag)
 			then
 				message = message..separator..type;
@@ -1436,7 +1455,7 @@ local function ItemFiltersHaveMatch(auction, itemFilters)
 	local passes = false;
 	if (classification == "Armor")
 	then
-		for type, flag in itemFilters.armorTypes do
+		for type, flag in pairs(itemFilters.armorTypes) do
 			if (flag and type == type2)
 			then
 				passes = true;
@@ -1445,7 +1464,7 @@ local function ItemFiltersHaveMatch(auction, itemFilters)
 		if (passes)
 		then
 			passes = false;
-			for slot, flag in itemFilters.armorSlots do
+			for slot, flag in pairs(itemFilters.armorSlots) do
 				if (flag and (slot == "Any Armor Slot" or slot == type1))
 				then
 					passes = true;
@@ -1458,7 +1477,7 @@ local function ItemFiltersHaveMatch(auction, itemFilters)
 		end
 	elseif (classification == "Weapon")
 	then
-		for type, flag in itemFilters.weaponTypes do
+		for type, flag in pairs(itemFilters.weaponTypes) do
 			local refinedType;
 			if (strsub(type, 1, 9) == "Two-Hand ")
 			then
@@ -1485,7 +1504,7 @@ local function ItemFiltersHaveMatch(auction, itemFilters)
 		end
 	elseif (classification == "Shield")
 	then
-		for type, flag in itemFilters.shieldTypes do
+		for type, flag in pairs(itemFilters.shieldTypes) do
 			if (flag and type2 == type)
 			then
 				passes = true;
@@ -1494,7 +1513,7 @@ local function ItemFiltersHaveMatch(auction, itemFilters)
 		end
 	elseif (classification == "Clothing")
 	then
-		for type, flag in itemFilters.clothingTypes do
+		for type, flag in pairs(itemFilters.clothingTypes) do
 			-- Is there a special case here for Held in Hand stuff?  No, Held in Hand is just the type
 			if (flag and
 				(type == type1 or
@@ -1527,7 +1546,7 @@ local function MakeMeetInString(zoneFilters)
 	if (zoneFilters)
 	then
 		local separator = "";
-		for zone, state in zoneFilters do
+		for zone, state in pairs(zoneFilters) do
 			if (state)
 			then
 				found = true;
@@ -1577,7 +1596,7 @@ end
 local function Autotrade_EncodeZoneFilter(zoneFilterAA)
 	local intArray = {};
 	local highestIndex = 0;
-	for zone, state in zoneFilterAA do
+	for zone, state in pairs(zoneFilterAA) do
 		local index = floor(ZoneIndexFromString[zone] / 32);
 		local remainder = mod(ZoneIndexFromString[zone], 32);
 		if (not intArray[index])
@@ -1620,7 +1639,7 @@ end
 local function DecodeZoneFilters(zoneFilterIntegerArray)
 	local zoneAA = {};
 
-	for index, bitField in zoneFilterIntegerArray do
+	for index, bitField in pairs(zoneFilterIntegerArray) do
 		DEBUG_MSG("Decoding zone filter, index="..index.."; bitfield="..bitField, 4);
 		local value = 1;
 		while (bitField > 0) do
@@ -1663,7 +1682,7 @@ local function ZoneFiltersHaveMatch(buyerZoneFilter, auctionZoneFilter)
 		match = true;
 	else
 		-- check each zone the buyer is willing to travel to.  If the seller has it checked, we have a match.
-		for zone, allowed in buyerZoneFilter do
+		for zone, allowed in pairs(buyerZoneFilter) do
 			if (allowed)
 			then
 				if (auctionZoneFilter[zone])
@@ -1711,13 +1730,13 @@ end
 
 function Autotrade_DuplicateAuction(auction, duplicateZones)
 	newAuction = {};
-	for index, value in auction do
+	for index, value in pairs(auction) do
 		newAuction[index] = value;
 	end
 	if (duplicateZones)
 	then
 		newAuction.zoneFilters = {}
-		for index, value in auction.zoneFilters do
+		for index, value in pairs(auction.zoneFilters) do
 			newAuction.zoneFilters[index] = value;
 		end
 	end
@@ -1728,10 +1747,29 @@ end
 
 
 local function Autotrade_FillAuctionFromLink(auctionInfo)
+	if (not auctionInfo or not auctionInfo.link)
+	then
+		return;
+	end
 	local startindex, endindex, color, id, name = string.find(auctionInfo.link, "^|c(%x%x%x%x%x%x%x%x)|H(.+)|h%[(.+)%]|h|r$");
 	if (not startindex)
 	then
-		return;
+		local itemName, itemLink = GetItemInfo(auctionInfo.link);
+		if (itemLink)
+		then
+			auctionInfo.link = itemLink;
+			startindex, endindex, color, id, name = string.find(auctionInfo.link, "^|c(%x%x%x%x%x%x%x%x)|H(.+)|h%[(.+)%]|h|r$");
+		end
+		if (itemName)
+		then
+			auctionInfo.name = itemName;
+		else
+			auctionInfo.name = auctionInfo.link;
+		end
+		if (not startindex)
+		then
+			return;
+		end
 	end
 	auctionInfo.qualityColor = color;
 	auctionInfo.id = id;
@@ -1740,21 +1778,25 @@ end
 
 
 function Autotrade_RemoveAuctionFromList(list, auctionInfo)
-	local found = false;
+	local foundIndex = nil;
 	DEBUG_MSG("Count before remove: "..table.getn(list), 4);
-	for index, value in list do
-		if ( found )
-		then
-			list[index - 1] = value;
-			list[index] = nil;
-			DEBUG_MSG("Found item at index "..index, 4);
-		elseif ( value.owner == auctionInfo.owner and
+	for index, value in ipairs(list) do
+		if ( value.owner == auctionInfo.owner and
 			value.link == auctionInfo.link and
 			value.auctionId == auctionInfo.auctionId )
-		then  -- TODO: replace with nice overloaded == operator
-			found = true;
-			list[index] = nil;
+		then
+			foundIndex = index;
+			break;
 		end
+	end
+	if (foundIndex)
+	then
+		DEBUG_MSG("Found item at index "..foundIndex, 4);
+		local lastIndex = table.getn(list);
+		for i = foundIndex, lastIndex - 1, 1 do
+			list[i] = list[i + 1];
+		end
+		list[lastIndex] = nil;
 	end
 	DEBUG_MSG("Count after remove: "..table.getn(list), 4);
 end
@@ -1763,9 +1805,279 @@ end
 -- clear list
 -- BUT don't create any 'dangling references' by just setting it to {}!
 function Autotrade_ClearList(list)
-	for index, value in list do
-		list[index] = nil;
+	for key in pairs(list) do
+		list[key] = nil;
 	end
+end
+
+local function Autotrade_AuctionListsReady()
+	return AuctionsMyDraft and AuctionsMyOpen and AuctionsMyClosed and AuctionsMyCancelled and
+		AuctionsOpen and AuctionsAllCancelled and
+		AuctionsBidOpen and AuctionsBidWon and AuctionsBidLost and AuctionsBidCancelled;
+end
+
+local function Autotrade_CopyAuctionList(target, source)
+	if (not target)
+	then
+		return;
+	end
+	Autotrade_ClearList(target);
+	if (source)
+	then
+		for i, value in ipairs(source) do
+			target[i] = value;
+		end
+	end
+end
+
+local function Autotrade_FindNextAuctionId()
+	local maxId = 0;
+	local function ScanList(list)
+		if (not list)
+		then
+			return;
+		end
+		for index, auction in ipairs(list) do
+			local id = tonumber(auction.auctionId);
+			if (id and id >= maxId)
+			then
+				maxId = id + 1;
+			end
+		end
+	end
+	ScanList(AuctionsMyDraft);
+	ScanList(AuctionsMyOpen);
+	ScanList(AuctionsMyClosed);
+	ScanList(AuctionsMyCancelled);
+	ScanList(AuctionsOpen);
+	ScanList(AuctionsAllCancelled);
+	ScanList(AuctionsBidOpen);
+	ScanList(AuctionsBidWon);
+	ScanList(AuctionsBidLost);
+	ScanList(AuctionsBidCancelled);
+	return maxId;
+end
+
+local function Autotrade_GetSavedDatabase()
+	local db = AutoTradeDB;
+	if (not db and type(list) == "table")
+	then
+		db = list;
+	end
+	if (not db)
+	then
+		db = {};
+	end
+	AutoTradeDB = db;
+	if (type(list) == "table" or list == nil)
+	then
+		list = db;
+	end
+	return db;
+end
+
+local function Autotrade_SaveState()
+	if (not Autotrade_AuctionListsReady())
+	then
+		return;
+	end
+	local db = Autotrade_GetSavedDatabase();
+	db.version = AUTOTRADE_SAVED_VERSION;
+	db.nextAuctionId = NextAuctionId;
+
+	db.my = db.my or {};
+	db.my.draft = AuctionsMyDraft;
+	db.my.open = AuctionsMyOpen;
+	db.my.closed = AuctionsMyClosed;
+	db.my.cancelled = AuctionsMyCancelled;
+
+	db.all = db.all or {};
+	db.all.open = AuctionsOpen;
+	db.all.cancelled = AuctionsAllCancelled;
+
+	db.bid = db.bid or {};
+	db.bid.open = AuctionsBidOpen;
+	db.bid.won = AuctionsBidWon;
+	db.bid.lost = AuctionsBidLost;
+	db.bid.cancelled = AuctionsBidCancelled;
+
+	if (not Filters)
+	then
+		Filters = {};
+	end
+	db.filters = Filters;
+	db.zoneFilters = ZoneFilters;
+	db.itemFilterStrings = ItemFilterStrings;
+end
+
+local function Autotrade_LoadState()
+	if (Autotrade_SavedLoaded)
+	then
+		return;
+	end
+	if (Autotrade_FramesLoaded < 3)
+	then
+		Autotrade_SavedNeedsLoad = true;
+		return;
+	end
+	if (not Autotrade_AuctionListsReady())
+	then
+		Autotrade_SavedNeedsLoad = true;
+		return;
+	end
+	Autotrade_SavedNeedsLoad = false;
+	Autotrade_SavedLoaded = true;
+
+	local db = Autotrade_GetSavedDatabase();
+	if (not db.version)
+	then
+		db.version = AUTOTRADE_SAVED_VERSION;
+	end
+
+	if (db.my)
+	then
+		Autotrade_CopyAuctionList(AuctionsMyDraft, db.my.draft);
+		Autotrade_CopyAuctionList(AuctionsMyOpen, db.my.open);
+		Autotrade_CopyAuctionList(AuctionsMyClosed, db.my.closed);
+		Autotrade_CopyAuctionList(AuctionsMyCancelled, db.my.cancelled);
+	end
+	if (db.all)
+	then
+		Autotrade_CopyAuctionList(AuctionsOpen, db.all.open);
+		Autotrade_CopyAuctionList(AuctionsAllCancelled, db.all.cancelled);
+	end
+	if (db.bid)
+	then
+		Autotrade_CopyAuctionList(AuctionsBidOpen, db.bid.open);
+		Autotrade_CopyAuctionList(AuctionsBidWon, db.bid.won);
+		Autotrade_CopyAuctionList(AuctionsBidLost, db.bid.lost);
+		Autotrade_CopyAuctionList(AuctionsBidCancelled, db.bid.cancelled);
+	end
+
+	Filters = db.filters or {};
+	ZoneFilters = db.zoneFilters;
+	ItemFilterStrings = db.itemFilterStrings;
+	ItemFilters = MakeItemTypeFilterFromFlags(ItemFilterStrings);
+
+	if (db.nextAuctionId)
+	then
+		NextAuctionId = db.nextAuctionId;
+	else
+		local nextId = Autotrade_FindNextAuctionId();
+		if (nextId < 1)
+		then
+			nextId = 1;
+		end
+		NextAuctionId = nextId;
+	end
+
+	Autotrade_SaveState();
+end
+
+function Autotrade_NoteFrameLoaded()
+	Autotrade_FramesLoaded = Autotrade_FramesLoaded + 1;
+	if (Autotrade_FramesLoaded >= 3)
+	then
+		Autotrade_LoadState();
+	end
+end
+
+local function Autotrade_CountListItems(list)
+	if (not list)
+	then
+		return 0;
+	end
+	return table.getn(list);
+end
+
+local function Autotrade_DebugDumpState(label)
+	local tag = label or "state";
+	DEFAULT_CHAT_FRAME:AddMessage("AutoTrade "..tag.." lists:");
+	DEFAULT_CHAT_FRAME:AddMessage("  My: Draft="..Autotrade_CountListItems(AuctionsMyDraft).." Open="..Autotrade_CountListItems(AuctionsMyOpen).." Closed="..Autotrade_CountListItems(AuctionsMyClosed).." Aborted="..Autotrade_CountListItems(AuctionsMyCancelled));
+	DEFAULT_CHAT_FRAME:AddMessage("  All: Open="..Autotrade_CountListItems(AuctionsOpen).." Cancelled="..Autotrade_CountListItems(AuctionsAllCancelled));
+	DEFAULT_CHAT_FRAME:AddMessage("  Bid: Open="..Autotrade_CountListItems(AuctionsBidOpen).." Won="..Autotrade_CountListItems(AuctionsBidWon).." Lost="..Autotrade_CountListItems(AuctionsBidLost).." Cancelled="..Autotrade_CountListItems(AuctionsBidCancelled));
+	local page = PageInfoByFrameName and PageInfoByFrameName["AutotradeMyAuctionsFrame"];
+	if (page and page.auctionLists)
+	then
+		DEFAULT_CHAT_FRAME:AddMessage("  Page(My): Draft="..Autotrade_CountListItems(page.auctionLists[AuctionTypeDraft]).." Open="..Autotrade_CountListItems(page.auctionLists[AuctionTypeOpen]).." Closed="..Autotrade_CountListItems(page.auctionLists[AuctionTypeClosed]).." Aborted="..Autotrade_CountListItems(page.auctionLists[AuctionTypeMyCancelled]));
+	end
+end
+
+local function Autotrade_ResetAllLists()
+	if (not Autotrade_AuctionListsReady())
+	then
+		return;
+	end
+	Autotrade_ClearList(AuctionsMyDraft);
+	Autotrade_ClearList(AuctionsMyOpen);
+	Autotrade_ClearList(AuctionsMyClosed);
+	Autotrade_ClearList(AuctionsMyCancelled);
+	Autotrade_ClearList(AuctionsOpen);
+	Autotrade_ClearList(AuctionsAllCancelled);
+	Autotrade_ClearList(AuctionsBidOpen);
+	Autotrade_ClearList(AuctionsBidWon);
+	Autotrade_ClearList(AuctionsBidLost);
+	Autotrade_ClearList(AuctionsBidCancelled);
+end
+
+local function Autotrade_CreateDummyAuction(name, status, minBid, highestBid, owner, bidder, flatSale)
+	local auction = {};
+	auction.owner = owner or UnitName("player");
+	auction.bidder = bidder;
+	auction.highestBidder = bidder;
+	auction.status = status;
+	auction.minBid = minBid or 0;
+	auction.highestBid = highestBid;
+	auction.bid = highestBid;
+	auction.count = 1;
+	auction.name = name or ("Dummy Item "..NextAuctionId);
+	auction.link = "|cffffffff|Hitem:6948:0:0:0|h[Hearthstone]|h|r";
+	auction.id = "item:6948:0:0:0";
+	auction.texture = "Interface\\Icons\\INV_Misc_Rune_01";
+	auction.lengthIndex = AuctionLength.Normal;
+	auction.countdownTime = AuctionCountdownTimes[auction.lengthIndex];
+	auction.elapsedTime = 0;
+	auction.timeToResend = AuctionIdleResendTime;
+	auction.flatSale = flatSale;
+	auction.location = "Stormwind";
+	auction.auctionId = NextAuctionId.."";
+	NextAuctionId = NextAuctionId + 1;
+	return auction;
+end
+
+local function Autotrade_CreateDummyData()
+	if (not Autotrade_AuctionListsReady())
+	then
+		DEFAULT_CHAT_FRAME:AddMessage("AutoTrade: lists not ready");
+		return;
+	end
+	Autotrade_ResetAllLists();
+	local player = UnitName("player") or "Player";
+	local other = "OtherPlayer";
+	Autotrade_AddAuctionToList(AuctionsMyDraft, Autotrade_CreateDummyAuction("Dummy Draft", AuctionTypeDraft, 1000, nil, player, nil, nil));
+	Autotrade_AddAuctionToList(AuctionsMyOpen, Autotrade_CreateDummyAuction("Dummy Open", AuctionTypeOpen, 2500, nil, player, nil, nil));
+	Autotrade_AddAuctionToList(AuctionsMyClosed, Autotrade_CreateDummyAuction("Dummy Closed", AuctionTypeClosed, 1200, 1800, player, other, nil));
+	Autotrade_AddAuctionToList(AuctionsMyCancelled, Autotrade_CreateDummyAuction("Dummy Aborted", AuctionTypeMyCancelled, 0, nil, player, nil, nil));
+	Autotrade_AddAuctionToList(AuctionsOpen, Autotrade_CreateDummyAuction("Dummy All Open", AuctionTypeAllOpen, 5000, nil, other, nil, nil));
+	Autotrade_AddAuctionToList(AuctionsAllCancelled, Autotrade_CreateDummyAuction("Dummy All Cancelled", AuctionTypeAllCancelled, 0, nil, other, nil, nil));
+	Autotrade_AddAuctionToList(AuctionsBidOpen, Autotrade_CreateDummyAuction("Dummy Bid Open", AuctionTypeBidOpen, 1500, 1600, other, player, nil));
+	Autotrade_AddAuctionToList(AuctionsBidWon, Autotrade_CreateDummyAuction("Dummy Bid Won", AuctionTypeBidWon, 1500, 2000, other, player, nil));
+	Autotrade_AddAuctionToList(AuctionsBidLost, Autotrade_CreateDummyAuction("Dummy Bid Lost", AuctionTypeBidLost, 1500, 2100, other, other, nil));
+	Autotrade_AddAuctionToList(AuctionsBidCancelled, Autotrade_CreateDummyAuction("Dummy Bid Cancelled", AuctionTypeBidCancelled, 0, nil, other, nil, nil));
+	if (AutotradeMyAuctionsPageInfo)
+	then
+		AutotradeListFrame_Update(AutotradeMyAuctionsPageInfo, true);
+	end
+	if (AutotradeBidAuctionsPageInfo)
+	then
+		AutotradeListFrame_Update(AutotradeBidAuctionsPageInfo, true);
+	end
+	if (AutotradeAllAuctionsPageInfo)
+	then
+		AutotradeListFrame_Update(AutotradeAllAuctionsPageInfo, true);
+	end
+	Autotrade_SaveState();
+	DEFAULT_CHAT_FRAME:AddMessage("AutoTrade: dummy data added");
 end
 
 
@@ -1775,7 +2087,7 @@ function Autotrade_AddAuctionToList(list, auctionInfo)
 		-- TODO: Report error!
 		return;
 	end
-	for index, item in list do
+	for index, item in ipairs(list) do
 		if (item.owner == auctionInfo.owner and
 			item.link == auctionInfo.link and
 			item.auctionId == auctionInfo.auctionId)
@@ -1803,7 +2115,7 @@ function Autotrade_FindAuctionInList(list, auction)
 
 	DEBUG_MSG("test link ="..ExplodeHyperlink(auction.link).."; owner="..auction.owner.."; id="..auction.auctionId, 4);
 
-	for index, value in list do
+	for index, value in ipairs(list) do
 		DEBUG_MSG("list["..index.."].link="..ExplodeHyperlink(value.link)..";owner="..value.owner.."; id="..value.auctionId , 4);
 		if ((auction.link == value.link) and
 			(auction.owner == value.owner) and
@@ -1823,7 +2135,7 @@ function CombineAuctionStacks(list, auction)
 	end
 	DEBUG_MSG("test link ="..ExplodeHyperlink(auction.link).."; owner="..auction.owner.."; id="..auction.auctionId, 4);
 
-	for index, value in list do
+	for index, value in ipairs(list) do
 		DEBUG_MSG("list["..index.."].link="..ExplodeHyperlink(value.link)..";owner="..value.owner.."; id="..value.auctionId , 4);
 		if ((auction.link == value.link) and
 			(auction.owner == value.owner) and
@@ -1843,9 +2155,9 @@ function Autotrade_FindMatchingAuctions(list, auctionCriteria)
 	local i = 1;
 	if (auctionCriteria)
 	then
-		for index, auction in list do
+		for index, auction in ipairs(list) do
 			local thisMatches = true;
-			for criteria, value in auctionCriteria do
+			for criteria, value in pairs(auctionCriteria) do
 				if (auction[criteria] ~= value)
 				then
 					thisMatches = false;
@@ -2051,7 +2363,7 @@ local function Autotrade_MoneyFrame_ShowHighestBid(auction, moneyFrame, moneyFra
 	local bidToDisplay = 0;
 	if ( ( auction.status == AuctionTypeOpen or
 			auction.status == AuctionTypeAllOpen or
-			auction.status == AuctionTypeBiddingOpen or
+			auction.status == AuctionTypeBidOpen or
 			auction.status == AuctionTypeAllCancelled or
 			auction.status == AuctionTypeBidCancelled or
 			auction.status == AuctionTypeMyCancelled) and
@@ -2123,9 +2435,7 @@ local function Autotrade_MoneyFrame_ShowMyBid(auction, moneyFrame, moneyFrameLab
 	moneyFrame:Show();
 
 	local bidToShow = 0;
-	if (auction.bid and
-		(not auction.highestBid or
-			auction.bid > auction.highestBid))
+	if (auction.bid)
 	then
 		bidToShow = auction.bid;
 	else
@@ -2142,7 +2452,7 @@ local function Autotrade_MoneyFrame_ShowMyBid(auction, moneyFrame, moneyFrameLab
 		end
 		bidToShow = Autotrade_GetNextBid(bidAmount, isMin);
 	end
-	Autotrade_MoneyFrame_SetType(moneyFrame, "BID");
+	Autotrade_MoneyFrame_SetType(moneyFrame, "STATIC");
 	RefreshMoneyFrame(moneyFrame:GetName(), bidToShow, 1, 1, true, true);
 end
 
@@ -2335,7 +2645,7 @@ local function Autotrade_UpdateDetails(page, explicitAction)
 	-- don't show Accept button if it's an open auction they own
 	-- do show Accept button if it's a prerelease auction they're setting min bid.
 	local isOwner = auctionInfo.owner == UnitName("player");
-	local isOpen = auctionInfo.status == AuctionTypeOpen or auctionInfo.status == AuctionTypeAllOpen or auctionInfo.status == AuctionTypeBiddingOpen;
+	local isOpen = auctionInfo.status == AuctionTypeOpen or auctionInfo.status == AuctionTypeAllOpen or auctionInfo.status == AuctionTypeBidOpen;
 	if ( isOpen and (not canAfford or isOwner))
 	then
 		page.acceptButton:Disable();
@@ -2378,7 +2688,7 @@ local function Autotrade_UpdateDetails(page, explicitAction)
 
 	elseif (auctionInfo.status == AuctionTypeOpen or
 		 auctionInfo.status == AuctionTypeAllOpen or
-		 auctionInfo.status == AuctionTypeBiddingOpen)
+		 auctionInfo.status == AuctionTypeBidOpen)
 	then
 		-- Open auction.
 		--	Show & Enable Bid button
@@ -2506,6 +2816,44 @@ local function Autotrade_TypeIsShown(type, displayFlags)
 end
 
 
+function Autotrade_UpdateCollapseAllButton(page)
+	if (not page or not page.frame or not page.frame.GetName) then
+		return;
+	end
+
+	local frameName = page.frame:GetName();
+	local buttonName = string.gsub(frameName, "Frame$", "CollapseAllButton");
+	local button = getglobal(buttonName);
+	if (not button) then
+		buttonName = string.gsub(frameName, "Frame$", "CollapseBidButton");
+		button = getglobal(buttonName);
+	end
+	if (not button or not page.auctionTypesList) then
+		return;
+	end
+
+	local allHidden = true;
+	if (not page.frame.typeFlags) then
+		allHidden = false;
+	else
+		for _, type in ipairs(page.auctionTypesList) do
+			if (Autotrade_TypeIsShown(type, page.frame.typeFlags)) then
+				allHidden = false;
+				break;
+			end
+		end
+	end
+
+	if (allHidden) then
+		button:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+		button:SetHighlightTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
+	else
+		button:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+		button:SetHighlightTexture("Interface\\Buttons\\UI-MinusButton-Up");
+	end
+end
+
+
 local function Autotrade_BuildVisibleAuctionList(auctionTypes, auctionLists, offset, numToShow, displayFlags)
 	-- window start and window end are inclusive
 	local windowStart = offset + 1;
@@ -2515,7 +2863,7 @@ local function Autotrade_BuildVisibleAuctionList(auctionTypes, auctionLists, off
 	local displayList = { };
 	local done = false;
 	local displayListIndex = 1;
-	for index, type in auctionTypes do
+	for index, type in ipairs(auctionTypes) do
 		local list = auctionLists[type];
 		local thisListCount = 1;
 		local listCount = 0;
@@ -2525,13 +2873,12 @@ local function Autotrade_BuildVisibleAuctionList(auctionTypes, auctionLists, off
 		-- Apply filters
 		local filteredList = {};
 		local filteredIndex = 1;
-		for index, auction in list do
-			if AuctionPassesBuyerFilter(auction)
-			then
-				listCount = listCount + 1;
-				filteredList[filteredIndex] = auction;
-				filteredIndex = filteredIndex + 1;
-			end
+		for index, auction in ipairs(list) do
+			local passes = AuctionPassesBuyerFilter(auction);
+			auction.autotradeFilteredOut = not passes;
+			listCount = listCount + 1;
+			filteredList[filteredIndex] = auction;
+			filteredIndex = filteredIndex + 1;
 		end
 
 		local skipList = listCount == 0;
@@ -2571,7 +2918,7 @@ local function Autotrade_BuildVisibleAuctionList(auctionTypes, auctionLists, off
 					local i = 2;
 					local index2;
 					local value;
-					for index2, value in filteredList do
+					for index2, value in ipairs(filteredList) do
 						-- stop once we have filled the display list
 						if (table.getn(displayList) >= numToShow)
 						then
@@ -2605,17 +2952,15 @@ local function Autotrade_CountDisplayedAuctions(page)
 	local list;
 	local count = 0;
 	-- TODO: nil value here when drag & drop
-	for type, list in page.auctionLists do
+	for type, list in pairs(page.auctionLists) do
 		if (list)
 		then
 			local listCount = 0;
 			local index;
 			local auction;
-			for index, auction in list do
-				if AuctionPassesBuyerFilter(auction)
-				then
-					listCount = listCount + 1;
-				end
+			for index, auction in ipairs(list) do
+				listCount = listCount + 1;
+				auction.autotradeFilteredOut = not AuctionPassesBuyerFilter(auction);
 			end
 
 			if (not page.typeFlags or Autotrade_TypeIsShown(type, page.typeFlags))
@@ -2754,7 +3099,12 @@ function AutotradeListFrame_Update(page, explicitAction)
 
 			local auctionInfo = visibleAuctionList[i];
 
-			itemButton:SetText("  "..Autotrade_GetItemTitle(auctionInfo, 19));
+			local itemTitle = Autotrade_GetItemTitle(auctionInfo, 19);
+			if (auctionInfo.autotradeFilteredOut)
+			then
+				itemTitle = itemTitle.." [filtered]";
+			end
+			itemButton:SetText("  "..itemTitle);
 			itemButton:Show();
 			itemButton.auctionInfo = auctionInfo;
 
@@ -2767,10 +3117,11 @@ function AutotradeListFrame_Update(page, explicitAction)
 				if (not page.frame.typeFlags or Autotrade_TypeIsShown(auctionInfo.name,page.frame.typeFlags))
 				then
 					itemButton:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
+					getglobal(thisItemButtonName.."Highlight"):SetTexture("Interface\\Buttons\\UI-MinusButton-Up");
 				else
 					itemButton:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up");
+					getglobal(thisItemButtonName.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				end
-				getglobal(thisItemButtonName.."Highlight"):SetTexture("Interface\\Buttons\\UI-PlusButton-Hilight");
 				itemButton:SetTextColor(NORMAL_FONT_COLOR.r * 0.7, NORMAL_FONT_COLOR.g * 0.7, NORMAL_FONT_COLOR.b * 0.7);
 				bidLabel:Hide();
 				subTextLabel:Hide();
@@ -2791,7 +3142,7 @@ function AutotradeListFrame_Update(page, explicitAction)
 					moneyColor = ColorPrerelease;
 				elseif (auctionInfo.status == AuctionTypeOpen or
 						auctionInfo.status == AuctionTypeAllOpen or
-						auctionInfo.status == AuctionTypeBiddingOpen)
+						auctionInfo.status == AuctionTypeBidOpen)
 				then
 					local canAfford = GetMoney() > 0;
 					if (auctionInfo.minBid)
@@ -2815,7 +3166,12 @@ function AutotradeListFrame_Update(page, explicitAction)
 					moneyColor = ColorClosed;
 				end
 
-				itemButton:SetTextColor(color.r, color.g, color.b, 1.0, 0);
+				if (auctionInfo.autotradeFilteredOut)
+			then
+				color = { r = 0.55, g = 0.55, b = 0.55 };
+				moneyColor = { r = 0.55, g = 0.55, b = 0.55 };
+			end
+			itemButton:SetTextColor(color.r, color.g, color.b, 1.0, 0);
 				bidLabel:SetTextColor(moneyColor.r, moneyColor.g, moneyColor.b, 1.0, 0);
 				subTextLabel:SetTextColor(moneyColor.r, moneyColor.g, moneyColor.b, 1.0, 0);
 
@@ -2894,6 +3250,7 @@ function AutotradeListFrame_Update(page, explicitAction)
 		end
 	end
 
+	Autotrade_UpdateCollapseAllButton(page);
 	Autotrade_UpdateDetails(page, explicitAction);
 
 end
@@ -3079,12 +3436,6 @@ local function NotifyUser(type, auctionInfo)
 	local message;
 	local sound;
 
-	local wcolor = "";
-	local lbrace = "";
-	local rbrace = "";
-	if ( getglobal( "COS_WHOLINK_COLOR_X" ) == 1 ) then wcolor = "|c2288ffaa"; end
-	if ( getglobal( "COS_WHOLINK_BRACE_X" ) == 1 ) then lbrace = "["; rbrace = "]"; end
-
 	if (Autotrade_ShowNotification and Autotrade_ShowNotification[type])
 	then
 		-- Set message & sound based on message type & auction info
@@ -3097,17 +3448,9 @@ local function NotifyUser(type, auctionInfo)
 			local auctionLink = Autotrade_MakeAllAuctionsLink(auctionInfo, "Jump to auction");
 			if (auctionInfo.count > 1)
 			then
-				if ( getglobal( "COS_WHOLINK_A_X" ) == 1) then
-					message = wcolor.."|HWhoLink:"..auctionInfo.owner.."|h"..lbrace..auctionInfo.owner..rbrace.."|h|r".." is selling "..auctionInfo.link.."x"..auctionInfo.count..".   "..auctionLink;
-				else
-					message = auctionInfo.owner.." is selling "..auctionInfo.link.."x"..auctionInfo.count..".   "..auctionLink;
-				end
+				message = auctionInfo.owner.." is selling "..auctionInfo.link.."x"..auctionInfo.count..".   "..auctionLink;
 			else
-				if ( getglobal( "COS_WHOLINK_A_X" ) == 1) then
-					message =wcolor.."|HWhoLink:"..auctionInfo.owner.."|h"..lbrace..auctionInfo.owner..rbrace.."|h|r".." is selling "..auctionInfo.link..".   "..auctionLink;
-				else
-					message = auctionInfo.owner.." is selling "..auctionInfo.link..".   "..auctionLink;
-				end
+				message = auctionInfo.owner.." is selling "..auctionInfo.link..".   "..auctionLink;
 			end
 		elseif (type == NotificationType.Sold)
 		then
@@ -3155,11 +3498,7 @@ local function NotifyUser(type, auctionInfo)
 				linkText = auctionInfo.name;
 			end
 			local auctionLink = Autotrade_MakeAllAuctionsLink(auctionInfo, linkText);
-			if ( getglobal( "COS_WHOLINK_A_X" ) == 1) then
-				message =  wcolor.."|HWhoLink:"..auctionInfo.owner.."|h"..lbrace..auctionInfo.owner..rbrace.."|h|r".." is selling "..auctionLink..", which is on your wish list";
-			else
-				message = auctionInfo.owner.." is selling "..auctionLink..", which is on your wish list";
-			end
+			message = auctionInfo.owner.." is selling "..auctionLink..", which is on your wish list";
 			sound = "TellMessage";
 		elseif (type == NotificationType.Aborted)
 		then
@@ -3182,7 +3521,7 @@ local function NotifyUser(type, auctionInfo)
 end
 
 
--- Handlers for Cosmos config page checkboxes
+-- Handlers for notification checkboxes
 function Autotrade_SetSoldNotification(value, checked)
 	Autotrade_ShowNotification[NotificationType.Sold] = (checked == 1);
 	if (Autotrade_ShowNotification[NotificationType.Sold])
@@ -3296,7 +3635,7 @@ end
 
 local function AutotradeFrame_ShowSubFrame(frameName)
 	DEBUG_MSG("Toggling subframe "..frameName, 3);
-	for index, value in AutotradeSubFrames do
+	for index, value in ipairs(AutotradeSubFrames) do
 
 		if ( value == frameName )
 		then
@@ -3445,7 +3784,7 @@ local function CancelAuctionsByOwner(owner)
 
 	if (owner == UnitName("player"))
 	then
-		for index, auction in AuctionsOpen do
+		for index, auction in ipairs(AuctionsOpen) do
 			auction.status = AuctionTypeMyCancelled;
 			Autotrade_AddAuctionToList(AuctionsMyCancelled, auction);
 		end
@@ -3456,14 +3795,14 @@ local function CancelAuctionsByOwner(owner)
 	-- find matching auctions in All Auctions and Bidding Auctions lists.  Then remove them and mark them as cancelled
 	local auctions = Autotrade_FindMatchingAuctions(AuctionsOpen, criteria);
 	DEBUG_MSG("Removing "..table.getn(auctions).." auctions from All Auctions", 4);
-	for index, auction in auctions do
+	for index, auction in ipairs(auctions) do
 		Autotrade_RemoveAuctionFromList(AuctionsOpen, auction);
 		Autotrade_AddAuctionToList(AuctionsAllCancelled, auction);
 		auction.status = AuctionTypeAllCancelled;
 	end
 	auctions = Autotrade_FindMatchingAuctions(AuctionsBidOpen, criteria);
 	DEBUG_MSG("Removing "..table.getn(auctions).." auctions from Bidding Auctions", 4);
-	for index, auction in auctions do
+	for index, auction in ipairs(auctions) do
 		Autotrade_RemoveAuctionFromList(AuctionsBidOpen, auction);
 		Autotrade_AddAuctionToList(AuctionsBidCancelled, auction);
 		auction.status = AuctionTypeBidCancelled;
@@ -3504,16 +3843,16 @@ end
 local function Autotrade_GetPlayerFaction()
 	local faction;
 	local race = UnitRace("player");
-	for index, hordeRace in HordeRaces do
+	for index, hordeRace in ipairs(HordeRaces) do
 		if (race == hordeRace)
 		then
 			faction = AutotradeFactionHorde;
 			break;
 		end
 	end
-	if (not channel)
+	if (not faction)
 	then
-		for index, allianceRace in AllianceRaces do
+		for index, allianceRace in ipairs(AllianceRaces) do
 			if (race == allianceRace)
 			then
 				faction = AutotradeFactionAlliance;
@@ -3632,6 +3971,7 @@ local function Autotrade_ShutdownCommunication()
 	if ( AutotradePlayerFaction ~= nil ) then
 	DEBUG_MSG("Shutting down comm.  Player faction is "..AutotradePlayerFaction, 4);
 	local channel = Autotrade_GetPlayerGlobalChannel();
+	Autotrade_AllowSelfLeaveCancel = true;
 	Autotrade_LeaveChannel(channel);
 	end
 end
@@ -3681,7 +4021,7 @@ local function GetMoneyAmountFromParsedArrays(amount, coin)
 	then
 		return bid;
 	end
-	for index, coinType in coin do
+	for index, coinType in ipairs(coin) do
 		if (coinType == "g")
 		then
 			bid = bid + Autotrade_MakeIntFromString(amount[index]) * COPPER_PER_GOLD;
@@ -3701,7 +4041,7 @@ function Autotrade_AuctionToString(auction)
 	local message = "[Auction: ";
 	newAuction = {};
 	local separator = "";
-	for index, value in auction do
+	for index, value in pairs(auction) do
 		message = message..separator..index.." = ";
 		if (value)
 		then
@@ -3814,14 +4154,60 @@ local function Autotrade_ParseAuctionString(message)
 							index, length, link, count, amount[1], coin[1], auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellShort);
 							if (not index)
 							then
-								DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.OldSellLong..">", 3);
-								index, length, link, count, amount[1], coin[1], amount[2], coin[2], auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellLong);
+							DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.OldSellLong..">", 3);
+							index, length, link, count, amount[1], coin[1], amount[2], coin[2], auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellLong);
+						end
+					end
+				end
+			end
+		end
+	end
+	if (not index)
+	then
+		DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.SellNoMinRaw..">", 3);
+		index, length, link, count, auctionId, duration, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.SellNoMinRaw);
+		if (not index)
+		then
+			DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.SellShortRaw..">", 3);
+			index, length, link, count, amount[1], coin[1], auctionId, duration, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.SellShortRaw);
+			if (not index)
+			then
+				DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.SellLongRaw..">", 3);
+				index, length, link, count, amount[1], coin[1], amount[2], coin[2], auctionId, duration, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.SellLongRaw);
+				if (not index)
+				then
+					DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.FlatSaleShortRaw..">", 3);
+					index, length, link, count, amount[1], coin[1], auctionId, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.FlatSaleShortRaw);
+					if (index)
+					then
+						duration = 0;
+						flatSale = 1;
+					else
+						DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.FlatSaleLongRaw..">", 3);
+						index, length, link, count, amount[1], coin[1], amount[2], coin[2], auctionId, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.FlatSaleLongRaw);
+						if (index)
+						then
+							duration = 0;
+							flatSale = 1;
+						else
+							DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.OldSellNoMinRaw..">", 3);
+							index, length, link, count, auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellNoMinRaw);
+							if (not index)
+							then
+								DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.OldSellShortRaw..">", 3);
+								index, length, link, count, amount[1], coin[1], auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellShortRaw);
+								if (not index)
+								then
+									DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.OldSellLongRaw..">", 3);
+									index, length, link, count, amount[1], coin[1], amount[2], coin[2], auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldSellLongRaw);
+								end
 							end
 						end
 					end
 				end
 			end
 		end
+	end
 	end
 	if (index)
 	then
@@ -3913,6 +4299,26 @@ local function Autotrade_ParseUpdateString(message)
 			end
 		end
 	end
+	if (not index)
+	then
+		DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.UpdateLongRaw..">", 3);
+		index, length, link, count, amount[1], coin[1], amount[2], coin[2], bidder, auctionId, duration, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.UpdateLongRaw);
+		if (not index)
+		then
+			DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.UpdateShortRaw..">", 3);
+			index, length, link, count, amount[1], coin[1], bidder, auctionId, duration, escapedLocation, meetFlags, texture = string.find(message, AutotradePayloadFormat.UpdateShortRaw);
+			if (not index)
+			then
+				DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.UpdateLongRaw..">", 3);
+				index, length, link, count, amount[1], coin[1], amount[2], coin[2], bidder, auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldUpdateLongRaw);
+				if (not index)
+				then
+					DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.UpdateShortRaw..">", 3);
+					index, length, link, count, amount[1], coin[1], bidder, auctionId, duration, escapedLocation, texture = string.find(message, AutotradePayloadFormat.OldUpdateShortRaw);
+				end
+			end
+		end
+	end
 
 	if (index)
 	then
@@ -3996,6 +4402,21 @@ local function Autotrade_ParseEndedString(message)
 			index, length, link, count, auctionId = string.find(message, AutotradePayloadFormat.Ended);
 		end
 	end
+	if (not index)
+	then
+		DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.SoldLongRaw..">", 3);
+		index, length, link, count, bidder, amount[1], coin[1], amount[2], coin[2], auctionId, escapedLocation = string.find(message, AutotradePayloadFormat.SoldLongRaw);
+		if (not index)
+		then
+			DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.SoldShortRaw..">", 3);
+			index, length, link, count, bidder, amount[1], coin[1], auctionId, escapedLocation = string.find(message, AutotradePayloadFormat.SoldShortRaw);
+			if (not index)
+			then
+				DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.EndedRaw..">", 3);
+				index, length, link, count, auctionId = string.find(message, AutotradePayloadFormat.EndedRaw);
+			end
+		end
+	end
 	if (index)
 	then
 		DEBUG_MSG("Found pattern.", 3);
@@ -4036,7 +4457,12 @@ local function Autotrade_MakeBid(pageInfo)
 	if (auction)
 	then
 		-- save bid in local store
-		auction.bid = pageInfo.lowerMoneyFrame.staticMoney;
+		local bidAmount = auction.bid;
+		if (bidAmount == nil and pageInfo.lowerMoneyFrame)
+		then
+			bidAmount = pageInfo.lowerMoneyFrame.staticMoney;
+		end
+		auction.bid = bidAmount;
 		local count;
 		if (auction.count > 1)
 		then
@@ -4073,6 +4499,16 @@ local function Autotrade_ParseBidString(message)
 		DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.BidShort..">", 3);
 		index, length, amount[1], coin[1], owner, link, count, auctionId, escapedLocation = string.find(message, AutotradePayloadFormat.BidShort);
 	end
+	if (not index)
+	then
+		DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.BidLongRaw..">", 3);
+		index, length, amount[1], coin[1], amount[2], coin[2], owner, link, count, auctionId, escapedLocation = string.find(message, AutotradePayloadFormat.BidLongRaw);
+		if (not index)
+		then
+			DEBUG_MSG("Checking <"..message.."> for pattern <"..AutotradePayloadFormat.BidShortRaw..">", 3);
+			index, length, amount[1], coin[1], owner, link, count, auctionId, escapedLocation = string.find(message, AutotradePayloadFormat.BidShortRaw);
+		end
+	end
 	if (index)
 	then
 		DEBUG_MSG("Found pattern.", 3);
@@ -4101,7 +4537,7 @@ local function Autotrade_ParseChatMessage(message, sender)
 	then
 		if (MessageVersionIsNewerThanCode(version) and not PrintedVersionError)
 		then
-			DEBUG_MSG("Error: Received a message that is more advanced than what this version of Cosmos Autotrade can understand.  This likely means there is an updated version available.  (This message will not be shown again for the remainder of this session.)", -1, 1, 0, 0);
+			DEBUG_MSG("Error: Received a message that is more advanced than what this version of AutoTrade can understand.  This likely means there is an updated version available.  (This message will not be shown again for the remainder of this session.)", -1, 1, 0, 0);
 			PrintedVersionError = true;
 		end
 		if (not CanUnderstandVersion(version))
@@ -4194,7 +4630,10 @@ end
 
 local function Autotrade_MessageChannelIsAutotrade(channel)
 	local isSpecific = false;
-	if (channel == Autotrade_GetPlayerGlobalChannel())
+	local expectedChannel = Autotrade_GetPlayerGlobalChannel();
+	local channelKey = Autotrade_ChannelKey(Autotrade_NormalizeChannelName(channel));
+	local expectedKey = Autotrade_ChannelKey(Autotrade_NormalizeChannelName(expectedChannel));
+	if (channelKey and expectedKey and channelKey == expectedKey)
 	then
 		isSpecific = true;
 	end
@@ -4205,9 +4644,38 @@ local function Autotrade_MessageChannelIsAutotrade(channel)
 	end
 	if (channel)
 	then
-		DEBUG_MSG("Autotrade_MessageChannelIsAutotrade("..channel..") is returning "..resultString, 4);
+		local expected = expectedChannel or "nil";
+		DEBUG_MSG("Autotrade_MessageChannelIsAutotrade("..channel..") is returning "..resultString.." (expected "..expected..")", 4);
 	end
 	return isSpecific;
+end
+
+function Autotrade_NormalizeChannelName(channel)
+	if (not channel)
+	then
+		return nil;
+	end
+	local index, length, trimmed = string.find(channel, "^%d+%.%s*(.+)$");
+	if (trimmed)
+	then
+		channel = trimmed;
+	end
+	index, length, trimmed = string.find(channel, "^([^%-]+)%s%-%s.+$");
+	if (trimmed)
+	then
+		channel = trimmed;
+	end
+	return channel;
+end
+
+function Autotrade_ChannelKey(channel)
+	if (not channel)
+	then
+		return nil;
+	end
+	channel = string.lower(channel);
+	channel = string.gsub(channel, "[^%w]", "");
+	return channel;
 end
 
 
@@ -4229,7 +4697,7 @@ local function Autotrade_TakeBid(link, auctionId, bidder, amount)
 	if (auction and
 		(auction.status == AuctionTypeOpen or
 			auction.status == AuctionTypeAllOpen or
-			auction.status == AuctionTypeBiddingOpen) and
+			auction.status == AuctionTypeBidOpen) and
 		(not auction.minBid or amount >= auction.minBid) and
 		(not auction.highestBid or amount > auction.highestBid))
 	then
@@ -4323,8 +4791,20 @@ function Autotrade_ProcessChatMessage(channel, messageType, message, sender, eve
 		then
 			sender = UnitName("player");
 		end
-		CancelAuctionsByOwner(sender);
-		if (AutotradeFrame.activeFrame and not AutotradeFrame.activeFrame == "AutotradeMyAuctionsFrame")
+		if (sender == UnitName("player"))
+		then
+			if (Autotrade_AllowSelfLeaveCancel)
+			then
+				CancelAuctionsByOwner(sender);
+				Autotrade_AllowSelfLeaveCancel = false;
+			else
+				processMessage = false;
+			end
+		elseif (sender)
+		then
+			CancelAuctionsByOwner(sender);
+		end
+		if (AutotradeFrame.activeFrame and AutotradeFrame.activeFrame ~= "AutotradeMyAuctionsFrame")
 		then
 			Autotrade_UpdateDetails(PageInfoByFrameName[AutotradeFrame.activeFrame]);
 		end
@@ -4412,13 +4892,16 @@ end
 
 local function Autotrade_AddTimeToAuctions(elapsed)
 	-- update auction times.
-	for index, auction in AuctionsMyOpen do
+	for i = 1, table.getn(AuctionsMyOpen), 1 do
+		local auction = AuctionsMyOpen[i];
 		auction.elapsedTime = auction.elapsedTime + elapsed;
 	end
-	for index, auction in AuctionsOpen do
+	for i = 1, table.getn(AuctionsOpen), 1 do
+		local auction = AuctionsOpen[i];
 		auction.elapsedTime = auction.elapsedTime + elapsed;
 	end
-	for index, auction in AuctionsBidOpen do
+	for i = 1, table.getn(AuctionsBidOpen), 1 do
+		local auction = AuctionsBidOpen[i];
 		if (not auction.flatSale)
 		then
 			-- For auctions we're bidding in, update time and send any Going Once/Going Twice notifications
@@ -4446,7 +4929,8 @@ local function Autotrade_AddTimeToAuctions(elapsed)
 
 	-- remove finished auctions, send timed updates, etc.
 	local foundNewFinishedAuction = false;
-	for index, auction in AuctionsMyOpen do
+	for i = table.getn(AuctionsMyOpen), 1, -1 do
+		local auction = AuctionsMyOpen[i];
 		if (not auction.flatSale and auction.elapsedTime > auction.countdownTime)
 		then
 			Autotrade_CloseAuction(auction);
@@ -4478,7 +4962,18 @@ end
 --------- Communication code and core auction management -------------------
 
 local function Autotrade_StartAuction(auctionInfo)
-	auctionInfo.minBid = AutotradeMyAuctionsPageInfo.upperMoneyFrame.staticMoney;
+	local frameMoney = nil;
+	if (AutotradeMyAuctionsPageInfo.upperMoneyFrame)
+	then
+		frameMoney = AutotradeMyAuctionsPageInfo.upperMoneyFrame.staticMoney;
+	end
+	if (frameMoney and frameMoney > 0)
+	then
+		auctionInfo.minBid = frameMoney;
+	elseif (auctionInfo.minBid == nil)
+	then
+		auctionInfo.minBid = 0;
+	end
 	auctionInfo.status = AuctionTypeOpen;
 	auctionInfo.countdownTime = auctionInfo.countdownTime;
 	auctionInfo.elapsedTime = 0;
@@ -4524,9 +5019,10 @@ end
 
 local function Autotrade_Init()
 	Autotrade_SetupCommunication();
+	Autotrade_LoadState();
 	local i = 0;
 	if (Autotrade_WishList) then
-		for index, value in Autotrade_WishList do
+		for index, value in pairs(Autotrade_WishList) do
 			i = i + 1;
 			break;
 		end
@@ -4617,122 +5113,19 @@ function Autotrade_Enable(checked)
 	end
 end
 
--- diff3, cosmos does not work.
---[[
-local function RegisterNotificationCheckbox(cosmosId, text, tooltip, callback)
-	Cosmos_RegisterConfiguration(cosmosId,
-	"CHECKBOX",
-	text,
-	tooltip,
-	callback,
-	1,
-	1,
-	0,
-	1,
-	"",
-	.01,
-	1,
-	"\%"
-	);
-end
-]]
-
 function AutotradeFrame_OnLoad()
-  Cosmos_RegisterChatCommand();
+	Autotrade_IgnoreSelfLeaveUntil = GetTime() + 5;
+  Autotrade_RegisterChatCommands();
   Autotrade_Enable();
-	-- diff3 - cosmos does not work
-	-- Register with CSM (Cosmos Master Configuration) --
-	--[[local tempcarray = { "/autotrade", "/allauctions" }
-	local tempcfunc = function (msg) ToggleAutotrade("AutotradeAllAuctionsFrame"); end
-	Cosmos_RegisterChatCommand ( "AUTOTRADE_AA", tempcarray, tempcfunc, "Shows all auctions currently in progress", CSM_CHAINNONE );
-
-  local tempcarray = { "/myauctions" }
-	local tempcfunc = function (msg) ToggleAutotrade("AutotradeMyAuctionsFrame"); end
-	Cosmos_RegisterChatCommand ( "AUTOTRADE_MY", tempcarray, tempcfunc, "Shows my auctions currently in progress", CSM_CHAINNONE );
-
-	local tempcarray = { "/mybids" }
-	local tempcfunc = function (msg) ToggleAutotrade("AutotradeBidAuctionsFrame"); end
-	Cosmos_RegisterChatCommand ( "AUTOTRADE_BID", tempcarray, tempcfunc, "Shows my bids currently in progress", CSM_CHAINNONE );
-
-	Cosmos_RegisterConfiguration("COS_AUTOTRADE","SECTION","Autotrade","This section is devoted to Autotrade options");
-	Cosmos_RegisterConfiguration("COS_AUTOTRADE_SECTION","SEPARATOR","Autotrade","This section is devoted to Autotrade options");
-
-  Cosmos_RegisterConfiguration("COS_ENABLEAUTOTRADE","CHECKBOX","Enable Autotrade",
-	"Click here to turn on/off the Autotrade system,\nwhich manages auctions ",
-	 Autotrade_Enable,
-	 1,
-	 1,
-	 1,
-	 1,
-	 "",
-	 .01,
-	 1,
-	 "\%"
-	 );
-	 Cosmos_RegisterConfiguration("COS_AUTOTRADEMUTE","CHECKBOX","Filter Channel Chatter",
- 	 "Click here to turn on/off the Display of\nplayer chatter in the auction channel ",
- 	 Autotrade_Mute,
- 	 1,
- 	 1,
- 	 1,
-  d	1
- 	);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYSOLD",
-		"Notify me when one of my items is sold",
-		"Click here to toggle notifications when one of your items is sold",
-		Autotrade_SetSoldNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYENDED",
-		"Notify me when my auction ends unsuccessfully",
-		"Click here to toggle notifications when one of your auctions ends with no sale",
-		Autotrade_SetEndedNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYOUTBID",
-		"Notify me when I am outbid in an auction",
-		"Click here to toggle notifications when one you get outbid in an auction",
-		Autotrade_SetOutbidNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYGGG",
-		"Notify when when auctions are \"going,\" \"going,\" \"gone,\"",
-		"Click here to toggle notifications when an auction I'm in is Going Once or Going Twice",
-		Autotrade_SetGoingGoingGoneNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYWON",
-		"Notify me when I win an auction",
-		"Click here to toggle notifications when you win an auction",
-		Autotrade_SetWonNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYLOST",
-		"Notify me when I lose an auction",
-		"Click here to toggle notifications when someone else wins an auction you're bidding in",
-		Autotrade_SetLostNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYWISHLIST",
-		"Notify me when a wish list item is for sale",
-		"Click here to toggle notifications when one of your wish list item goes up for sale or auction",
-		Autotrade_SetWishListNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYABORTED",
-		"Notify me when an auction I'm bidding in gets aborted",
-		"Click here to toggle notifications when an auction you bid in gets aborted because the seller quit or crashed",
-		Autotrade_SetAbortedNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYNEW",
-		"Notify me with audio and text when a new auction is posted",
-		"Click here to toggle notifications when a new auction is posted to the All Auctions tab",
-		Autotrade_SetNewNotification);
-
-	RegisterNotificationCheckbox("COS_AUTOTRADENOTIFYNEWSILENT",
-		"Notify me with text only when a new auction is posted",
-		"Click here to toggle notifications when a new auction is posted to the All Auctions tab",
-		Autotrade_SetSilentNewNotification);
-
-	Cosmos_RegisterConfiguration("COS_END_SECTION","SEPARATOR","End of Options","");
-]]--
 	this:RegisterEvent("UNIT_NAME_UPDATE");
 	-- diff3
 	this:RegisterEvent("ITEM_LOCK_CHANGED");
+	this:RegisterEvent("CHAT_MSG_CHANNEL");
+	this:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE");
+	this:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE_USER");
+	this:RegisterEvent("CHAT_MSG_CHANNEL_JOIN");
+	this:RegisterEvent("CHAT_MSG_CHANNEL_LEAVE");
+	this:RegisterEvent("PLAYER_LOGOUT");
 
 	PanelTemplates_SetNumTabs(this, 3);
 	PanelTemplates_SetTab(this, 1);
@@ -4804,6 +5197,12 @@ end
 
 
 function AutotradeFrame_OnEvent()
+	if (event == "PLAYER_LOGOUT")
+	then
+		Autotrade_SaveState();
+		return;
+	end
+
 	-- Don't resond if mod is disabled
 	if (not Autotrade_ModEnabled)
 	then
@@ -4825,20 +5224,28 @@ function AutotradeFrame_OnEvent()
 	then
 		DEBUG_MSG("ITEM_LOCK_CHANGED");
 
-		-- This is broken, get an error messages
-		if GetMouseFocus():GetParent():GetID() then
-			-- This i my fix for AUTO_TRADE_DRAGGED_ITEM_INFO
-			-- basecly I get bag and slot then we moce an item
-
-			slot = GetMouseFocus():GetID();
-			bag = GetMouseFocus():GetParent():GetID();
-
-			-- It's ugly but it work, cut the ID out of a ItemLink
-			mouse_item = GetContainerItemLink(bag, slot);
-			mouse_item = string.sub(mouse_item, 18)
-			mouse_item = CutHyperlink(mouse_item);
-			mouse_item = tonumber(mouse_item)
+		local focus = GetMouseFocus();
+		local parent = focus and focus:GetParent();
+		local slot = focus and focus:GetID();
+		local bag = parent and parent:GetID();
+		if (bag and slot)
+		then
+			local link = GetContainerItemLink(bag, slot);
+			if (link)
+			then
+				local trimmed = string.sub(link, 18);
+				local itemId = CutHyperlink(trimmed);
+				mouse_item = tonumber(itemId);
+			else
+				mouse_item = nil;
+			end
+		else
+			mouse_item = nil;
 		end
+	elseif (string.find(event, "^CHAT_MSG_CHANNEL"))
+	then
+		local channel = Autotrade_NormalizeChannelName(arg4 or arg9 or arg8);
+		Autotrade_ProcessChatMessage(channel, nil, arg1, arg2, event);
 	end
 end
 
@@ -4912,8 +5319,138 @@ function AutotradeSortButton_OnShow(what, filterwhat)
 -- diff3, broken?
 end
 
-function Autotrade_OpenChooseItemsFrame(zone, zoneFilter, frame, text, zoneFilters)
 
+Autotrade_ChooseItemsContext = nil;
+function Autotrade_GetPopupEditBox(context)
+	if (context and context.popup and context.popup.GetName)
+	then
+		local editBox = getglobal(context.popup:GetName().."EditBox");
+		if (editBox)
+		then
+			return editBox;
+		end
+	end
+	if (this and this.GetName)
+	then
+		local editBox = getglobal(this:GetName().."EditBox");
+		if (editBox)
+		then
+			return editBox;
+		end
+	end
+	for i = 1, 4 do
+		local popup = getglobal("StaticPopup"..i);
+		if (popup and popup:IsShown())
+		then
+			local editBox = getglobal("StaticPopup"..i.."EditBox");
+			if (editBox)
+			then
+				return editBox;
+			end
+		end
+	end
+	return getglobal("StaticPopup1EditBox");
+end
+function Autotrade_OpenChooseItemsFrame(items, currentFilters, frame, text, callback)
+	if (not items or not callback)
+	then
+		return;
+	end
+	Autotrade_ChooseItemsContext = { items = items, current = currentFilters, callback = callback };
+	if (not StaticPopupDialogs["AUTOTRADE_CHOOSE_ITEMS"])
+	then
+		StaticPopupDialogs["AUTOTRADE_CHOOSE_ITEMS"] = {
+			text = "",
+			button1 = ACCEPT,
+			button2 = "Cancel",
+			hasEditBox = 1,
+			maxLetters = 255,
+			OnShow = function()
+				local ctx = Autotrade_ChooseItemsContext;
+				if (ctx)
+				then
+					ctx.popup = this;
+				end
+				local editBox = Autotrade_GetPopupEditBox(ctx);
+				if (ctx and ctx.current and editBox)
+				then
+					local list = "";
+					local sep = "";
+					for key, value in pairs(ctx.current) do
+						if (value)
+						then
+							list = list..sep..key;
+							sep = ", ";
+						end
+					end
+					editBox:SetText(list);
+					editBox:HighlightText();
+				end
+			end,
+			OnAccept = function()
+				local ctx = Autotrade_ChooseItemsContext;
+				if (not ctx)
+				then
+					return;
+				end
+				local editBox = Autotrade_GetPopupEditBox(ctx);
+				if (not editBox)
+				then
+					return;
+				end
+				local input = editBox:GetText();
+				local selected = {};
+				local lower = string.lower(input or "");
+				if (lower == "all")
+				then
+					for i, item in ipairs(ctx.items) do
+						selected[item] = true;
+					end
+				elseif (lower == "none" or lower == "")
+				then
+					selected = {};
+				else
+					local lookup = {};
+					for i, item in ipairs(ctx.items) do
+						lookup[string.lower(item)] = item;
+					end
+					for token in string.gfind(input, "[^,]+") do
+						local cleaned = string.lower(token);
+						cleaned = string.gsub(cleaned, "^%s+", "");
+						cleaned = string.gsub(cleaned, "%s+$", "");
+						local idx = tonumber(cleaned);
+						if (idx and ctx.items[idx])
+						then
+							selected[ctx.items[idx]] = true;
+						elseif (lookup[cleaned])
+						then
+							selected[lookup[cleaned]] = true;
+						end
+					end
+				end
+				ctx.callback(selected);
+			end,
+			EditBoxOnEnterPressed = function()
+				local parent = this:GetParent();
+				if (parent and parent.GetName)
+				then
+					local button = getglobal(parent:GetName().."Button1");
+					if (button)
+					then
+						button:Click();
+					end
+				end
+			end,
+			EditBoxOnEscapePressed = function()
+				this:GetParent():Hide();
+			end,
+			timeout = 0,
+			whileDead = 1,
+			hideOnEscape = 1,
+		};
+	end
+	StaticPopupDialogs["AUTOTRADE_CHOOSE_ITEMS"].text = (text or "Choose items").."\nType 'all', 'none', or a comma-separated list.";
+	StaticPopup_Show("AUTOTRADE_CHOOSE_ITEMS");
 end
 
 function AutotradeSortButton_OnClick(filterwhat)
@@ -4995,9 +5532,9 @@ function AutotradeListClearButton_OnClick(itemButton)
 		local targetList;
 		local found;
 		local allLists = {MyAuctionLists, AllAuctionLists, BidAuctionLists};
-		for index, metaList in allLists do
+		for index, metaList in ipairs(allLists) do
 			local type;
-			for type, list in metaList do
+			for type, list in pairs(metaList) do
 				if (type == header.name)
 				then
 					targetList = list;
@@ -5011,7 +5548,7 @@ function AutotradeListClearButton_OnClick(itemButton)
 		end
 		if (targetList)
 		then
-			for index, auction in targetList do
+			for index, auction in ipairs(targetList) do
 				local frame = getglobal(AutotradeFrame.activeFrame);
 				if (frame.currentAuction and
 					frame.currentAuction.owner == auction.owner and
@@ -5047,7 +5584,7 @@ function AutotradeAcceptButton_OnClick()
 		then
 			Autotrade_StartAuction(auction);
 			AutotradeListFrame_Update(pageInfo, true);
-		elseif (auction.status == AuctionTypeOpen or auction.status == AuctionTypeAllOpen or auction.status == AuctionTypeBiddingOpen)
+		elseif (auction.status == AuctionTypeOpen or auction.status == AuctionTypeAllOpen or auction.status == AuctionTypeBidOpen)
 		then
 			local sendBid;
 			if (auction.flatSale)
@@ -5238,10 +5775,27 @@ function AutotradeCollapseAllButton_OnClick(page)
 	then
 		page.frame.typeFlags = {};
 	end
-	for index, type in page.auctionTypesList do
-		DEBUG_MSG("Hiding auctions of type "..type, 3);
-		page.frame.typeFlags[type] = 0;
+
+	local anyShown = false;
+	for _, type in ipairs(page.auctionTypesList) do
+		if (Autotrade_TypeIsShown(type, page.frame.typeFlags)) then
+			anyShown = true;
+			break;
+		end
 	end
+
+	if (anyShown) then
+		for _, type in ipairs(page.auctionTypesList) do
+			DEBUG_MSG("Hiding auctions of type "..type, 3);
+			page.frame.typeFlags[type] = 0;
+		end
+	else
+		for _, type in ipairs(page.auctionTypesList) do
+			DEBUG_MSG("Showing auctions of type "..type, 3);
+			page.frame.typeFlags[type] = 1;
+		end
+	end
+
 	AutotradeListFrame_Update(page, true);
 end
 
@@ -5305,14 +5859,15 @@ function Autotrade_CreateAuction()
 
 		-- update info to include auction ID and owner ID (together these should uniquely identify the auction)
 		auctionInfo.owner = UnitName("player");
-		auctionInfo.name = itemName;
-		auctionInfo.link = itemLink;
+		auctionInfo.name = itemName or ("item:"..itemid);
+		auctionInfo.link = itemLink or ("item:"..itemid);
 		auctionInfo.minBid = 0;
 		auctionInfo.count = 1;
 		auctionInfo.texture = itemTexture;
 		auctionInfo.lengthIndex = AuctionLength.Normal;
 		auctionInfo.countdownTime = AuctionCountdownTimes[AuctionLength.Normal];
 		auctionInfo.status = AuctionTypeDraft;
+		Autotrade_FillAuctionFromLink(auctionInfo);
 		DEBUG_MSG("Adding "..auctionInfo.name.." to draft auctions.", 3);
 		DEBUG_MSG("Link is "..ExplodeHyperlink(auctionInfo.link), 4);
 		auctionInfo.auctionId = NextAuctionId..""; -- just use strings, it's easier
@@ -5355,6 +5910,191 @@ function Autotrade_MoneyFrameUpdated(frame)
 	end
 end
 
+Autotrade_MoneyPopupContext = nil;
+
+function Autotrade_ParseMoneyInput(text)
+	if (not text)
+	then
+		return nil;
+	end
+	local input = string.lower(text);
+	input = string.gsub(input, "[%s,]", "");
+	if (input == "")
+	then
+		return nil;
+	end
+	local _, _, goldMatch = string.find(input, "(%d+)g");
+	local _, _, silverMatch = string.find(input, "(%d+)s");
+	local _, _, copperMatch = string.find(input, "(%d+)c");
+	local gold = tonumber(goldMatch) or 0;
+	local silver = tonumber(silverMatch) or 0;
+	local copper = tonumber(copperMatch) or 0;
+	if (gold == 0 and silver == 0 and copper == 0)
+	then
+		local value = tonumber(input);
+		if (value)
+		then
+			copper = value;
+		end
+	end
+	return gold * COPPER_PER_GOLD + silver * COPPER_PER_SILVER + copper;
+end
+
+function Autotrade_ShowMoneyInput(page, kind)
+	if (not page or not page.frame or not page.frame.currentAuction)
+	then
+		return;
+	end
+	Autotrade_MoneyPopupContext = { page = page, kind = kind };
+	if (not StaticPopupDialogs["AUTOTRADE_SET_MONEY"])
+	then
+		StaticPopupDialogs["AUTOTRADE_SET_MONEY"] = {
+			text = "",
+			button1 = ACCEPT,
+			button2 = "Cancel",
+			hasEditBox = 1,
+			maxLetters = 32,
+			OnShow = function()
+				local ctx = Autotrade_MoneyPopupContext;
+				if (ctx)
+				then
+					ctx.popup = this;
+				end
+				if (ctx and ctx.page and ctx.page.frame and ctx.page.frame.currentAuction)
+				then
+					local auction = ctx.page.frame.currentAuction;
+					local value = 0;
+					if (ctx.kind == "minBid")
+					then
+						value = auction.minBid or 0;
+					else
+						value = auction.bid or 0;
+					end
+					local editBox = Autotrade_GetPopupEditBox(ctx);
+					if (editBox)
+					then
+						editBox:SetText(value.."");
+						editBox:HighlightText();
+					end
+				end
+			end,
+			OnAccept = function()
+				local ctx = Autotrade_MoneyPopupContext;
+				if (not ctx)
+				then
+					return;
+				end
+				local editBox = Autotrade_GetPopupEditBox(ctx);
+				if (not editBox)
+				then
+					return;
+				end
+				local input = editBox:GetText();
+				local value = Autotrade_ParseMoneyInput(input);
+				if (value)
+				then
+					local auction = ctx.page.frame.currentAuction;
+					if (ctx.kind == "minBid")
+					then
+						auction.minBid = value;
+						if (ctx.page.upperMoneyFrame)
+						then
+							ctx.page.upperMoneyFrame.staticMoney = value;
+						end
+					else
+						auction.bid = value;
+						if (ctx.page.lowerMoneyFrame)
+						then
+							ctx.page.lowerMoneyFrame.staticMoney = value;
+						end
+					end
+					Autotrade_UpdateDetails(ctx.page, true);
+				end
+			end,
+			EditBoxOnEnterPressed = function()
+				local parent = this:GetParent();
+				if (parent and parent.GetName)
+				then
+					local button = getglobal(parent:GetName().."Button1");
+					if (button)
+					then
+						button:Click();
+					end
+				end
+			end,
+			EditBoxOnEscapePressed = function()
+				this:GetParent():Hide();
+			end,
+			timeout = 0,
+			whileDead = 1,
+			hideOnEscape = 1,
+		};
+	end
+	local title = "Set amount (e.g. 1g20s5c or 1200)";
+	if (kind == "minBid")
+	then
+		title = "Set minimum bid (e.g. 1g20s5c or 1200)";
+	end
+	StaticPopupDialogs["AUTOTRADE_SET_MONEY"].text = title;
+	StaticPopup_Show("AUTOTRADE_SET_MONEY");
+end
+
+function Autotrade_MoneyFrame_OnClick()
+	if (this and this.autotradePageInfo and this.autotradeMoneyKind)
+	then
+		Autotrade_ShowMoneyInput(this.autotradePageInfo, this.autotradeMoneyKind);
+	end
+end
+
+
+function Autotrade_DebugNetStatus()
+	local output = DEFAULT_CHAT_FRAME or ChatFrame1;
+	if (not output) then
+		return;
+	end
+
+	local player = UnitName("player") or "unknown";
+	local faction = AutotradePlayerFaction or UnitFactionGroup("player") or "unknown";
+	local channel = Autotrade_GetPlayerGlobalChannel();
+	local normalized = Autotrade_NormalizeChannelName(channel);
+	local channelKey = Autotrade_ChannelKey(normalized);
+	local channelNum = 0;
+	if (channel) then
+		channelNum = Autotrade_GetChannelNumber(channel);
+	end
+
+	output:AddMessage("AutoTrade Net:", 1.0, 1.0, 0.0);
+	output:AddMessage("  Player: "..player.."  Faction: "..faction, 1.0, 1.0, 0.0);
+	output:AddMessage("  Debug comm: "..tostring(DEBUG_COMM), 1.0, 1.0, 0.0);
+	output:AddMessage("  Channel: "..tostring(channel).."  Num: "..channelNum, 1.0, 1.0, 0.0);
+	output:AddMessage("  Normalized: "..tostring(normalized).."  Key: "..tostring(channelKey), 1.0, 1.0, 0.0);
+
+	local list = { GetChannelList() };
+	local i = 1;
+	local listText = "";
+	local found = false;
+	while (list[i]) do
+		local id = list[i];
+		local name = list[i + 1];
+		if (name) then
+			if (listText == "") then
+				listText = id.."."..name;
+			else
+				listText = listText..", "..id.."."..name;
+			end
+			if (channelKey and Autotrade_ChannelKey(Autotrade_NormalizeChannelName(name)) == channelKey) then
+				found = true;
+			end
+		end
+		i = i + 2;
+	end
+	if (listText == "") then
+		listText = "(none)";
+	end
+	output:AddMessage("  Channel list: "..listText, 1.0, 1.0, 0.0);
+	output:AddMessage("  Expected channel present: "..(found and "yes" or "no"), 1.0, 1.0, 0.0);
+end
+
 
 function Autotrade_ChangeSellMethod_OnClick()
 	local frame = getglobal(AutotradeFrame.activeFrame);
@@ -5377,8 +6117,8 @@ function Autotrade_ChangeSellMethod_OnClick()
 end
 
 -- diff3
--- Cosmos Emulator stuff goes here
-function Cosmos_RegisterChatCommand()
+-- Chat command setup
+function Autotrade_RegisterChatCommands()
   SLASH_AutoTrade1 = "/autotrade";
   SLASH_AutoTrade2 = "/at";
   SlashCmdList["AutoTrade"] = function (msg)
@@ -5393,8 +6133,14 @@ function Cosmos_RegisterChatCommand()
       ToggleAutotrade("AutotradeMyAuctionsFrame");
     elseif cmd == "mybids" then
       ToggleAutotrade("AutotradeBidAuctionsFrame");
+    elseif cmd == "dummy" then
+      Autotrade_CreateDummyData();
+    elseif cmd == "dump" then
+      Autotrade_DebugDumpState("dump");
+    elseif cmd == "net" then
+      Autotrade_DebugNetStatus();
     elseif cmd == "help" then
-      ChatFrame1:AddMessage( "AutoTrade: /autotrade [autotrade, allauctions, myauctions, mybids]" , 1.0, 1.0, 0.0, 1.0);
+      ChatFrame1:AddMessage( "AutoTrade: /autotrade [autotrade, allauctions, myauctions, mybids, dummy, dump, net]" , 1.0, 1.0, 0.0, 1.0);
     else
       ToggleAutotrade("AutotradeMyAuctionsFrame");
     end

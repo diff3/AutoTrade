@@ -60,4 +60,18 @@ function AutotradeBidAuctionsFrame_OnLoad()
 	AutotradeBidAuctionsPageInfo.saleText = "For sale by:";
 	AutotradeBidAuctionsPageInfo.auctionText = "For auction by:";
 
+	if (AutotradeBidAuctionsWishListButtonText)
+	then
+		AutotradeBidAuctionsWishListButtonText:SetText(AUTOTRADE_WISH_LIST);
+	end
+	if (AutotradeBidAuctionsAutoRemoveButtonText)
+	then
+		AutotradeBidAuctionsAutoRemoveButtonText:SetText(AUTOTRADE_REMOVE_IF_WIN);
+	end
+
+	AutotradeBidAuctionsBidMoneyFrameLower.autotradePageInfo = AutotradeBidAuctionsPageInfo;
+	AutotradeBidAuctionsBidMoneyFrameLower.autotradeMoneyKind = "bid";
+	AutotradeBidAuctionsBidMoneyFrameLower:EnableMouse(true);
+	AutotradeBidAuctionsBidMoneyFrameLower:SetScript("OnMouseDown", Autotrade_MoneyFrame_OnClick);
+	Autotrade_NoteFrameLoaded();
 end
